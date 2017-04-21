@@ -1,0 +1,16 @@
+Resultados Esperados para cada archivo:
+01: Costo óptimo 30;
+02: Costo óptimo 35;
+03: Costo óptimo 31;
+04: Costo óptimo 30;
+05: Costo óptimo 83;
+06: Costo óptimo 76;
+07: Costo óptimo 10;
+08: Costo óptimo 143;
+09: Costo óptimo 10;
+10: Costo óptimo 17;
+11: Costo óptimo 15.
+12: Costo óptimo 15;
+burma14: Costo óptimo 3323;
+ulysses16: Costo óptimo 6859;
+gr17: Costo óptimo 2085;
