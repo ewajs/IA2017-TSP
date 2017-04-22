@@ -30,59 +30,59 @@ para benchmarking.
 
 Ej.
 
-***************  Ciudades  ***************
+	***************  Ciudades  ***************
 
-Ciudad 0:
-	 Distancia a Ciudad 1: 5
-	 Distancia a Ciudad 2: 15
-	 Distancia a Ciudad 3: 17
-	 Distancia a Ciudad 4: 7
+	Ciudad 0:
+		 Distancia a Ciudad 1: 5
+		 Distancia a Ciudad 2: 15
+		 Distancia a Ciudad 3: 17
+		 Distancia a Ciudad 4: 7
 
-Ciudad 1:
-	 Distancia a Ciudad 0: 5
-	 Distancia a Ciudad 2: 6
-	 Distancia a Ciudad 3: 19
-	 Distancia a Ciudad 4: 20
+	Ciudad 1:
+		 Distancia a Ciudad 0: 5
+		 Distancia a Ciudad 2: 6
+		 Distancia a Ciudad 3: 19
+		 Distancia a Ciudad 4: 20
 
-Ciudad 2:
-	 Distancia a Ciudad 0: 15
-	 Distancia a Ciudad 1: 6
-	 Distancia a Ciudad 3: 7
-	 Distancia a Ciudad 4: 21
+	Ciudad 2:
+		 Distancia a Ciudad 0: 15
+		 Distancia a Ciudad 1: 6
+		 Distancia a Ciudad 3: 7
+		 Distancia a Ciudad 4: 21
 
-Ciudad 3:
-	 Distancia a Ciudad 0: 17
-	 Distancia a Ciudad 1: 19
-	 Distancia a Ciudad 2: 7
-	 Distancia a Ciudad 4: 5
+	Ciudad 3:
+		 Distancia a Ciudad 0: 17
+		 Distancia a Ciudad 1: 19
+		 Distancia a Ciudad 2: 7
+		 Distancia a Ciudad 4: 5
 
-Ciudad 4:
-	 Distancia a Ciudad 0: 7
-	 Distancia a Ciudad 1: 20
-	 Distancia a Ciudad 2: 21
-	 Distancia a Ciudad 3: 5
-*******************************************
+	Ciudad 4:
+		 Distancia a Ciudad 0: 7
+		 Distancia a Ciudad 1: 20
+		 Distancia a Ciudad 2: 21
+		 Distancia a Ciudad 3: 5
+	*******************************************
 
-**************  Estadística  **************
-Cantidad de ciudades: 5
-Cantidad de conexiones: 10
-Cantidad de caminos posibles: 12
-Media de Distancias: 12.200000
-Desvío Estándar de Distancias: 6.415606
-*******************************************
+	**************  Estadística  **************
+	Cantidad de ciudades: 5
+	Cantidad de conexiones: 10
+	Cantidad de caminos posibles: 12
+	Media de Distancias: 12.200000
+	Desvío Estándar de Distancias: 6.415606
+	*******************************************
 
-**************  Heurística  ***************
-h(0) = 25
-*******************************************
+	**************  Heurística  ***************
+	h(0) = 25
+	*******************************************
 
-**************  Resultados  ***************
-Camino Optimo: 0;4;3;2;1;0;
-Distancia Total = 30
-Nodos Abiertos: 9
-Nodos Creados: 17
-Nodos Eliminados: 0
-Tiempo de ejecucion = 0.222000 ms
-*******************************************
+	**************  Resultados  ***************
+	Camino Optimo: 0;4;3;2;1;0;
+	Distancia Total = 30
+	Nodos Abiertos: 9
+	Nodos Creados: 17
+	Nodos Eliminados: 0
+	Tiempo de ejecucion = 0.222000 ms
+	*******************************************
 
 ### Modificando TSP.h
 
