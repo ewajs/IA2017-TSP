@@ -7,8 +7,9 @@ problema y lo resuelve utilizando A*.
 
 - TSP.c
 - TSP.h
-- 15 archivos *.txt con datos de distintas configuraciones de ciudades.
-- Resultados.txt con los costos optimos de cada *.txt
+- 15 archivos .txt con datos de distintas configuraciones de ciudades.
+- Resultados.txt con los costos optimos de cada .txt
+- 2 carpetas con 20 archivos (10 c/u) con mas archivos utilizados para benchmarking
 
 ### Compilando
 
@@ -18,21 +19,18 @@ make
 
 ### Corriendo el programa
 
-Para correr el programa hay que pasarle como argumento uno de los archivos *txt
+Para correr el programa hay que pasarle como argumento uno de los archivos .txt
 
 Ej.
 ./TSP ruta_de_los_TXT/TSP_IN_01.txt
 
-En consola se imprimira la candidad de ciudades, la informacion de las ciudades;
-la Distancia minima usada para h[0]; el Costo Total del recorrido optimo;
-la cantidad de Nodos Abiertos y el Tiempo de ejecucion en ms.
+En consola se imprimira la informacion de las ciudades, estadistica de las mismas,
+la Distancia minima usada para h[0]; y los resultados del algoritmo con informacion
+para benchmarking.
 
 Ej.
 
-5
-Importando distancias
-Cargando Array
-Imprimiendo Array
+***************  Ciudades  ***************
 
 Ciudad 0:
 	 Distancia a Ciudad 1: 5
@@ -63,12 +61,28 @@ Ciudad 4:
 	 Distancia a Ciudad 1: 20
 	 Distancia a Ciudad 2: 21
 	 Distancia a Ciudad 3: 5
-Distancia minima = 29
+*******************************************
 
-Path: 0;1;2;3;4;0;
-Total COST = 30
-Nodos Abiertos: 10
-Tiempo de ejecucion = 0.279000 ms
+**************  Estadística  **************
+Cantidad de ciudades: 5
+Cantidad de conexiones: 10
+Cantidad de caminos posibles: 12
+Media de Distancias: 12.200000
+Desvío Estándar de Distancias: 6.415606
+*******************************************
+
+**************  Heurística  ***************
+h(0) = 25
+*******************************************
+
+**************  Resultados  ***************
+Camino Optimo: 0;4;3;2;1;0;
+Distancia Total = 30
+Nodos Abiertos: 9
+Nodos Creados: 17
+Nodos Eliminados: 0
+Tiempo de ejecucion = 0.222000 ms
+*******************************************
 
 ### Modificando TSP.h
 
