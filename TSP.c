@@ -229,8 +229,8 @@ void populateCity(city* cityArray, char* data)
   printf("*******************************************\n");
   printf("\n**************  Estadística  **************\n");
   printf("Cantidad de ciudades: %d\n", cityNum);
-  printf("Cantidad de caminos diferentes: %d\n", connections);
-  printf("Cantidad de caminos posibles: %d\n", factorial(cityNum - 1)/2);
+  printf("Cantidad de conexiones: %d\n", connections);
+  printf("Cantidad de caminos posibles: %ld\n", factorial((long int) (cityNum - 1))/2);
   printf("Media de Distancias: %f\n", mean);
   printf("Desvío Estándar de Distancias: %f\n", sd);
   printf("*******************************************\n");
@@ -341,13 +341,13 @@ void TSP(city* cityArray)
         printList(closedList);
 #endif //DEBUG
         printf("\n**************  Resultados  ***************\n");
-        printf("Path: ");
+        printf("Camino Óptimo: ");
         while(depth)
           {
             printf("%d;",path[depth-1]);
             depth--;
           }
-        printf("\nTotal COST = %d\n",openList->cost);
+        printf("\nDistancia Total = %d\n",openList->cost);
         printf("Nodos Abiertos: %d\n",NA);
         printf("Nodos Creados: %d\n",createdNodes);
         printf("Nodos Eliminados: %d\n",deletedNodes);
@@ -635,7 +635,7 @@ void freeMemory(listNode* a)
   free(a);
 }
 
-int factorial(int f)
+long int factorial(long int f)
 {
     if ( f == 0 )
         return 1;

@@ -50,4 +50,4 @@ void printList(listNode* a);
 void addNode(city* cityArray, int j, listNode* fatherNode,  int* dist, int depth, int* histogram, depthNode** depthList);
 void freeMemory (listNode*a);
 int findMinimumDistances(city* cityArray, int depth, int currentCity, int* histogram);
-int factorial(int f);
+long int factorial(long int f);
