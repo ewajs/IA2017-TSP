@@ -23,7 +23,7 @@ Para correr el programa hay que pasarle como argumento uno de los archivos .txt
 
 Ej.
 
-	./TSP ruta_de_los_TXT/TSP_IN_01.txt
+	./TSP Inputs/TSP_IN_03.txt
 
 En consola se imprimira la informacion de las ciudades, estadistica de las mismas,
 la Distancia minima usada para h[0]; y los resultados del algoritmo con informacion
