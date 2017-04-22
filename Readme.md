@@ -13,9 +13,9 @@ problema y lo resuelve utilizando A*.
 
 ### Compilando
 
-Para compilar utilizar:
+Para compilar navegar hasta el directorio de la repo y utilizar:
 
-make
+	make
 
 ### Corriendo el programa
 
