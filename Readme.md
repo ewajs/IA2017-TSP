@@ -14,7 +14,7 @@ problema y lo resuelve utilizando A*.
 
 Para compilar utilizar:
 
-gcc -o TSP TSP.c
+make
 
 ### Corriendo el programa
 
