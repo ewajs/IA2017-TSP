@@ -10,6 +10,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#include <math.h>
 
 /* Defines */
 #define HEURISTICS_ON  //Para implementar heuristica
@@ -35,7 +36,7 @@ typedef struct listNode{
 }listNode;
 
 typedef struct depthNode{
-  struct listNode* node;                // Puntero a Nodo 
+  struct listNode* node;                // Puntero a Nodo
   struct depthNode* nextDepthNode;      // Puntero a siguiente item en la lista
   struct depthNode* previousDepthNode;  // Puntero a item anterior en la lista
 }depthNode;
@@ -49,3 +50,4 @@ void printList(listNode* a);
 void addNode(city* cityArray, int j, listNode* fatherNode,  int* dist, int depth, int* histogram, depthNode** depthList);
 void freeMemory (listNode*a);
 int findMinimumDistances(city* cityArray, int depth, int currentCity, int* histogram);
+int factorial(int f);

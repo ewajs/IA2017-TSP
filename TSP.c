@@ -12,6 +12,9 @@
 int cityNum;
 int startNode =0;
 
+// Variables para Benchmarking
+int createdNodes, deletedNodes;
+double mean, sd;
 int main(int argc, char* argv[])
 {
   FILE *importFile;
@@ -19,6 +22,10 @@ int main(int argc, char* argv[])
   int len;
   char* delimiter;
 
+  mean = 0;
+  sd = 0;
+  createdNodes = 0;
+  deletedNodes = 0;
   if(argc != 2)
   {
     printf("Debe pasar el archivo como parámetro\n");
@@ -32,7 +39,6 @@ int main(int argc, char* argv[])
   delimiter = strchr(importText,';');
   *delimiter = '\0';
   cityNum = atoi(importText);
-  printf("%d\n", cityNum);
   city cityArray[cityNum];
   initializeCity(cityArray);
   fgets(importText, 1024*8, importFile);
@@ -185,8 +191,8 @@ void populateCity(city* cityArray, char* data)
 
   int distances;
   char* delimiter;
-  printf("Importando distancias\n");
-  printf("Cargando Array\n");
+
+  int connections = 0;
   for(int i = 0; i < cityNum - 1; i++)
   {
     for(int j = i + 1; j < cityNum; j++)
@@ -200,10 +206,18 @@ void populateCity(city* cityArray, char* data)
 
       cityArray[j].distance[i] = distances;
       cityArray[j].nextCity[i] = i;
+      mean = mean + distances;
+      sd = sd + distances*distances;
+      connections++;
     }
   }
 
-  printf("Imprimiendo Array\n");
+  mean = mean/connections;
+  sd = sd/connections;
+  sd = sd - mean*mean;
+  sd = sqrt(sd);
+
+  printf("\n***************  Ciudades  ***************\n");
   for(int i = 0; i < cityNum; i++)
   {
     printf("\nCiudad %d:\n", cityArray[i].id);
@@ -212,6 +226,14 @@ void populateCity(city* cityArray, char* data)
       printf("\t Distancia a Ciudad %d: %d\n", cityArray[i].nextCity[j], cityArray[i].distance[j]);
     }
   }
+  printf("*******************************************\n");
+  printf("\n**************  Estadística  **************\n");
+  printf("Cantidad de ciudades: %d\n", cityNum);
+  printf("Cantidad de caminos diferentes: %d\n", connections);
+  printf("Cantidad de caminos posibles: %d\n", factorial(cityNum - 1)/2);
+  printf("Media de Distancias: %f\n", mean);
+  printf("Desvío Estándar de Distancias: %f\n", sd);
+  printf("*******************************************\n");
 
   return;
 
@@ -237,9 +259,9 @@ void TSP(city* cityArray)
   listNode* fatherNode;
   depthNode* depthList[cityNum];
   int path[cityNum+1]; //Reservo un vector para guardar el camino recorrido
-  int histogram[cityNum]; //Usamos un histograma para hacer comparacion rapida de caminos 
+  int histogram[cityNum]; //Usamos un histograma para hacer comparacion rapida de caminos
   int minimumDistancesArray[cityNum];//Generar vector de distancias minimas
-  
+
   for(int i = 0; i < cityNum; i++) // Inicializo mis listas de profundidad
     depthList[i] = NULL;
 
@@ -247,9 +269,11 @@ void TSP(city* cityArray)
     {
       histogram[i] = 0;
     }
-  
+
   int minDistance = findMinimumDistances(cityArray, depth, startNode, histogram); //Hallamos h[0] y llenamos minimumDistanesArray con la segunda menor distancia de cada ciudad
-  printf("Distancia minima = %d\n",minDistance);
+  printf("\n**************  Heurística  ***************\n");
+  printf("h(0) = %d\n",minDistance);
+  printf("*******************************************\n");
 #ifdef DEBUG
    printf("START NODE = %d\n",cityArray[startNode].id);
 #endif //DEBUG
@@ -288,7 +312,7 @@ void TSP(city* cityArray)
     path[depth] = currentNode->idCurrentCity; //Primer elemento de camino es ciudad actual
     histogram[currentNode->idCurrentCity] = 1;
     depth++;
-    
+
     while(currentNode)
       {
         if (currentNode->father)
@@ -304,7 +328,7 @@ void TSP(city* cityArray)
       /*   histogram[path[i]] = 1; */
       /* } */
 
-    ////////////////////    
+    ////////////////////
     if(openList->idCurrentCity == startNode && depth > 1) // Encontre GOAL!!!!
       {
 #ifdef DEBUG
@@ -316,7 +340,8 @@ void TSP(city* cityArray)
         printf("--------------- Closed  List ---------------\n");
         printList(closedList);
 #endif //DEBUG
-        printf("\nPath: ");
+        printf("\n**************  Resultados  ***************\n");
+        printf("Path: ");
         while(depth)
           {
             printf("%d;",path[depth-1]);
@@ -324,9 +349,12 @@ void TSP(city* cityArray)
           }
         printf("\nTotal COST = %d\n",openList->cost);
         printf("Nodos Abiertos: %d\n",NA);
+        printf("Nodos Creados: %d\n",createdNodes);
+        printf("Nodos Eliminados: %d\n",deletedNodes);
+        printf("*******************************************\n");
 
         //Liberamos memoria
-#ifdef NO_REPETIDOS        
+#ifdef NO_REPETIDOS
         for(int selectedDepth = 0; selectedDepth <cityNum-1; selectedDepth++)
           {
             depthNode* currDepthListItem = depthList[selectedDepth];
@@ -346,7 +374,7 @@ void TSP(city* cityArray)
         freeMemory(closedList);
         return;
       }
-    
+
     //////////////////// SI NO ES NODO GOAL ABRIMOS, INCLUIMOS NUEVOS NODOS EN ORDEN ////////////////////////////////////////
 
     if(depth == cityNum)//Si estoy en el ultimo nodo agrego solo el nodo GOAL
@@ -370,7 +398,7 @@ void TSP(city* cityArray)
           }
       }
     ////////////////////////////////////////////////////////////////////////////////
-    
+
     ////// SACAMOS NODO ABIERTO DE LISTA ABIERTA Y LO PASAMOS A FINAL DE LISTA CERRADA //////
     openList = fatherNode->nextListItem; //Cambio primer item de lista abierta
     openList->previousListItem = NULL;
@@ -388,7 +416,7 @@ void TSP(city* cityArray)
       {
         closedList = fatherNode;
       }
-    fatherNode->nextListItem = NULL; // Apunto en ultimo nodo agregado de cerrada a null  
+    fatherNode->nextListItem = NULL; // Apunto en ultimo nodo agregado de cerrada a null
   }
 
   //SI SALGO DEL WHILE POR ACA NO ENCONTRE EL GOAL!!!!!!
@@ -451,26 +479,26 @@ void addNode(city* cityArray, int j, listNode* fatherNode, int *dist, int depth,
   int currentCost = fatherNode->cost + costToMe;
 #ifdef NO_REPETIDOS
   depthNode* currDepthListItem = depthList[depth-1];
-  
+
   while(currDepthListItem) // Mientras haya algun item en la lista para comparar entro
   {
-      
+
     if(currDepthListItem->node->idCurrentCity == currentCity) //Busco coincidencia con ciudad actual
     {
       for(int i = 0; i < cityNum; i++) //Limpio el histograma
         {
           histogram2[i] = 0;
         }
-      
+
       auxNode = currDepthListItem->node->father; //Empiezo a armar el camino partiendo del padre
-      
+
       while(auxNode)
       {
         histogram2[auxNode->idCurrentCity] = 1;
         auxNode = auxNode->father;
       }
 
-      int flagDif = 0; // Reseteo flag de coincidencia de caminos recorridos 
+      int flagDif = 0; // Reseteo flag de coincidencia de caminos recorridos
 
       for(int i = 0; i < cityNum; i++)
         {
@@ -480,9 +508,10 @@ void addNode(city* cityArray, int j, listNode* fatherNode, int *dist, int depth,
               break;
             }
         }
-       
+
       if(!flagDif) //llegué a un path que termina en la ciudad a abrir y compuesto por las mismas ciudades
         {
+          deletedNodes++;
           if(currentCost < currDepthListItem->node->cost) // Si encontré un mejor camino bajo estas condiciones, borro el anterior.
             {
               listNode* nodeToDelete = currDepthListItem->node;
@@ -507,7 +536,7 @@ void addNode(city* cityArray, int j, listNode* fatherNode, int *dist, int depth,
               if(!nodeToDelete->isFather) //Si el nodo a borrar esta en la lista abierta
                 {
                   free(nodeToDelete);
-                }          
+                }
               break;
             }else
             {
@@ -518,8 +547,9 @@ void addNode(city* cityArray, int j, listNode* fatherNode, int *dist, int depth,
     currDepthListItem = currDepthListItem->nextDepthNode;
   }
 #endif //NO_REPETIDOS
-  
+
   // Si nunca explore el camino o el camino explorado era de mayor costo. Agrego nuevo Nodo a la lista abierta.
+  createdNodes++;
   listNode* currentNode =(listNode*) malloc(sizeof(listNode));
   currentNode->   idCurrentCity     = currentCity;
   currentNode->   cost              = currentCost;
@@ -531,7 +561,7 @@ void addNode(city* cityArray, int j, listNode* fatherNode, int *dist, int depth,
 #else
   currentNode->   heuristic         = 0;
 #endif //HEURISTICS_ON
-  
+
   if (currentNode->heuristic < 0) //La heuristica tiene que ser siempre >= 0
     currentNode->heuristic = 0;
   currentNode->   isFather          = 0;
@@ -603,4 +633,11 @@ void freeMemory(listNode* a)
       free(a->previousListItem);
     }
   free(a);
+}
+
+int factorial(int f)
+{
+    if ( f == 0 )
+        return 1;
+    return(f * factorial(f - 1));
 }
