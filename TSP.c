@@ -47,7 +47,8 @@ int main(int argc, char* argv[])
   clock_t endTime = clock();
   //********** TERMINE DE CONTAR TIEMPO ACA **********
   double executionTime = (double)1000*(endTime - startTime) / CLOCKS_PER_SEC;
-  printf("Tiempo de ejecucion = %f ms\n\n", executionTime);
+  printf("Tiempo de ejecucion = %f ms\n", executionTime);
+  printf("*******************************************\n");
   return 0;
 }
 
@@ -351,7 +352,6 @@ void TSP(city* cityArray)
         printf("Nodos Abiertos: %d\n",NA);
         printf("Nodos Creados: %d\n",createdNodes);
         printf("Nodos Eliminados: %d\n",deletedNodes);
-        printf("*******************************************\n");
 
         //Liberamos memoria
 #ifdef NO_REPETIDOS
