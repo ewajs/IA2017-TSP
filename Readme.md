@@ -29,8 +29,8 @@ la Distancia minima usada para h[0]; y los resultados del algoritmo con informac
 para benchmarking.
 
 Ej.
-	***************  Ciudades  ***************
 
+	***************  Ciudades  ***************
 	Ciudad 0:
 		 Distancia a Ciudad 1: 5
 		 Distancia a Ciudad 2: 15
