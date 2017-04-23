@@ -18,11 +18,11 @@ Para compilar navegar hasta el directorio de la repo y utilizar:
 	make
 
 
-En Windows sin full support para C99 a partir de VisualStudio 2015:
+En **Windows** sin full support para C99 a partir de VisualStudio 2015:
 En el archivo TSP.h descomentar #define WINDOWS
 Luego en la consola de Desarrollador de VisualStudio:
 
-cl TSP.c
+      cl TSP.c
 
 
 ### Corriendo el programa
@@ -33,9 +33,9 @@ Ej.
 
 	./TSP Inputs/TSP_IN_03.txt
 
-En WINDOWS
+En **WINDOWS**
 En la consola:
-cd TSP.exe TSP_IN_01.txt
+   cd TSP.exe TSP_IN_01.txt
 
 En consola se imprimira la informacion de las ciudades, estadistica de las mismas,
 la Distancia minima usada para h[0]; y los resultados del algoritmo con informacion
