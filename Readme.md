@@ -36,7 +36,7 @@ Ej.
 En **WINDOWS**
 En la consola:
 
-      cd TSP.exe TSP_IN_01.txt
+      TSP.exe Inputs\TSP_IN_01.txt
 
 En consola se imprimira la informacion de las ciudades, estadistica de las mismas,
 la Distancia minima usada para h[0]; y los resultados del algoritmo con informacion

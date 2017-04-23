@@ -37,6 +37,11 @@ int main(int argc, char* argv[])
   clock_t startTime = clock();
 
   importFile = fopen(argv[1], "r");
+  if (!importFile)
+    {
+      printf("EL ARCHIVO %s NO EXISTE\n",argv[1]);
+      return 0;
+    }
   fgets(importText, 1024, importFile);
   delimiter = strchr(importText,';');
   *delimiter = '\0';
