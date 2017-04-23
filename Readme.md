@@ -13,9 +13,9 @@ problema y lo resuelve utilizando A*.
 
 ### Compilando
 
-Para compilar utilizar:
+Para compilar navegar hasta el directorio de la repo y utilizar:
 
-make
+	make
 
 
 En Windows sin full support para C99 a partir de VisualStudio 2015:
@@ -30,7 +30,8 @@ cl TSP.c
 Para correr el programa hay que pasarle como argumento uno de los archivos .txt
 
 Ej.
-./TSP ruta_de_los_TXT/TSP_IN_01.txt
+
+	./TSP Inputs/TSP_IN_03.txt
 
 En WINDOWS
 En la consola:
@@ -43,59 +44,71 @@ para benchmarking.
 Ej.
 
 	***************  Ciudades  ***************
-
 	Ciudad 0:
 		 Distancia a Ciudad 1: 5
 		 Distancia a Ciudad 2: 15
 		 Distancia a Ciudad 3: 17
 		 Distancia a Ciudad 4: 7
+		 Distancia a Ciudad 5: 6
 
 	Ciudad 1:
 		 Distancia a Ciudad 0: 5
 		 Distancia a Ciudad 2: 6
 		 Distancia a Ciudad 3: 19
 		 Distancia a Ciudad 4: 20
+		 Distancia a Ciudad 5: 7
 
 	Ciudad 2:
 		 Distancia a Ciudad 0: 15
 		 Distancia a Ciudad 1: 6
-		 Distancia a Ciudad 3: 7
+		 Distancia a Ciudad 3: 3
 		 Distancia a Ciudad 4: 21
+		 Distancia a Ciudad 5: 5
 
 	Ciudad 3:
 		 Distancia a Ciudad 0: 17
 		 Distancia a Ciudad 1: 19
-		 Distancia a Ciudad 2: 7
-		 Distancia a Ciudad 4: 5
+		 Distancia a Ciudad 2: 3
+		 Distancia a Ciudad 4: 4
+		 Distancia a Ciudad 5: 7
 
 	Ciudad 4:
 		 Distancia a Ciudad 0: 7
 		 Distancia a Ciudad 1: 20
 		 Distancia a Ciudad 2: 21
-		 Distancia a Ciudad 3: 5
+		 Distancia a Ciudad 3: 4
+		 Distancia a Ciudad 5: 8
+
+	Ciudad 5:
+		 Distancia a Ciudad 0: 6
+		 Distancia a Ciudad 1: 7
+		 Distancia a Ciudad 2: 5
+		 Distancia a Ciudad 3: 7
+		 Distancia a Ciudad 4: 8
 	*******************************************
 
 	**************  Estadística  **************
-	Cantidad de ciudades: 5
-	Cantidad de conexiones: 10
-	Cantidad de caminos posibles: 12
-	Media de Distancias: 12.200000
-	Desvío Estándar de Distancias: 6.415606
+	Cantidad de ciudades: 6
+	Cantidad de conexiones: 15
+	Cantidad de caminos posibles: 60
+	Media de Distancias: 10.000000
+	Desvío Estándar de Distancias: 6.186006
 	*******************************************
 
 	**************  Heurística  ***************
-	h(0) = 25
+	h(0) = 24
 	*******************************************
 
 	**************  Resultados  ***************
-	Camino Optimo: 0;4;3;2;1;0;
-	Distancia Total = 30
-	Nodos Abiertos: 9
-	Nodos Creados: 17
-	Nodos Eliminados: 0
-	Tiempo de ejecucion = 0.222000 ms
-	*******************************************
-
+	Camino Óptimo: 0;4;3;2;5;1;0;
+	Distancia Total = 31
+	Nodos Creados: 50
+	Nodos Abiertos: 24
+	Nodos Eliminados: 6
+	Nodos Removidos: 1
+	Nodos Descartados: 5
+	Tiempo de ejecucion = 0.509000 ms
+	*******************************************`
 ### Modificando TSP.h
 
 El archivo TSP.h tiene 3 defines que se pueden comentar o descomentar para
@@ -120,7 +133,12 @@ El programa se maneja con 2 listas una openList y otra closedList.
 Cada nodo que se crea se inserta en openList en orden de menor a mayor f(n) = g(n) + h(n).
 Cada nodo que se abre pasa al final de la lista closedList.
 el camino recorrido de cada nodo se obtiene sigiendo los punteros a father de cada
-nodo.
+nodo. Asimismo se utiliza un vector de listas de profundidad llamado depthList
+en el que se guardan los caminos recorridos para descartar aquellos nodos que
+los repitan de manera menos eficiente. Nuevos nodos menos eficientes serán descartados y
+en caso de encontrarse un nodo menos eficiente en la lista abierta se lo remueve antes
+de insertar el nuevo nodo encontrado.
+
 
 La funcion que aplica el algoritmo de busqueda es:
 void TSP(city* cityArray);

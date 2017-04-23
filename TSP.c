@@ -9,11 +9,12 @@
 /*Includes */
 #include "TSP.h"
 
+
 int cityNum;
 int startNode =0;
 
 // Variables para Benchmarking
-int createdNodes, deletedNodes;
+int createdNodes, deletedNodes, removedNodes;
 double mean, sd;
 int main(int argc, char* argv[])
 {
@@ -26,6 +27,7 @@ int main(int argc, char* argv[])
   sd = 0;
   createdNodes = 0;
   deletedNodes = 0;
+  removedNodes = 0;
   if(argc != 2)
   {
     printf("Debe pasar el archivo como parámetro\n");
@@ -280,11 +282,14 @@ void TSP(city* cityArray)
     {
       histogram[i] = 0;
     }
-
+#ifdef HEURISTICS_ON
   int minDistance = findMinimumDistances(cityArray, depth, startNode, histogram); //Hallamos h[0] y llenamos minimumDistanesArray con la segunda menor distancia de cada ciudad
   printf("\n**************  Heurística  ***************\n");
   printf("h(0) = %d\n",minDistance);
   printf("*******************************************\n");
+#else
+ printf("\n************  Sin Heurística  *************\n");
+#endif //HEURISTICS_ON
 #ifdef DEBUG
    printf("START NODE = %d\n",cityArray[startNode].id);
 #endif //DEBUG
@@ -359,9 +364,11 @@ void TSP(city* cityArray)
             depth--;
           }
         printf("\nDistancia Total = %d\n",openList->cost);
-        printf("Nodos Abiertos: %d\n",NA);
         printf("Nodos Creados: %d\n",createdNodes);
+        printf("Nodos Abiertos: %d\n",NA);
         printf("Nodos Eliminados: %d\n",deletedNodes);
+        printf("Nodos Removidos: %d\n",removedNodes);
+        printf("Nodos Descartados: %d\n",deletedNodes - removedNodes);
 
         //Liberamos memoria
 #ifdef NO_REPETIDOS
@@ -528,6 +535,7 @@ void addNode(city* cityArray, int j, listNode* fatherNode, int *dist, int depth,
           deletedNodes++;
           if(currentCost < currDepthListItem->node->cost) // Si encontré un mejor camino bajo estas condiciones, borro el anterior.
             {
+              removedNodes++;
               listNode* nodeToDelete = currDepthListItem->node;
               // Borro de la lista abierta.
               if(nodeToDelete->previousListItem) // si no estoy en el primer elemento

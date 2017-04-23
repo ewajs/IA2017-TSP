@@ -13,7 +13,7 @@
 #include <math.h>
 
 /* Defines */
-#define HEURISTICS_ON  //Para implementar heuristica
+#define HEURISTICS_ON  //Para implementar heuristica HEURISTICS_ON
 //#define DEBUG  //Para imprimir LISTAS ABIERTA y CERRADA y otra info
 #define NO_REPETIDOS //Si esta activo no agrega Nodos de estados repetidos
 //#define WINDOWS //Para compilar en entornos sin soporte para VLAs (arrays de long variables)
