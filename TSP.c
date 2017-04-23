@@ -39,7 +39,11 @@ int main(int argc, char* argv[])
   delimiter = strchr(importText,';');
   *delimiter = '\0';
   cityNum = atoi(importText);
+#ifdef WINDOWS  
+  city cityArray[vectorLength];
+#else
   city cityArray[cityNum];
+#endif
   initializeCity(cityArray);
   fgets(importText, 1024*8, importFile);
   populateCity(cityArray, importText);
@@ -258,11 +262,17 @@ void TSP(city* cityArray)
   listNode* openList;
   listNode* closedList = NULL;
   listNode* fatherNode;
+#ifdef WINDOWS
+  depthNode* depthList[vectorLength];
+  int path[vectorLength+1]; //Reservo un vector para guardar el camino recorrido
+  int histogram[vectorLength]; //Usamos un histograma para hacer comparacion rapida de caminos
+  int minimumDistancesArray[vectorLength];//Generar vector de distancias minimas
+#else
   depthNode* depthList[cityNum];
   int path[cityNum+1]; //Reservo un vector para guardar el camino recorrido
   int histogram[cityNum]; //Usamos un histograma para hacer comparacion rapida de caminos
   int minimumDistancesArray[cityNum];//Generar vector de distancias minimas
-
+#endif//WINDOWS
   for(int i = 0; i < cityNum; i++) // Inicializo mis listas de profundidad
     depthList[i] = NULL;
 
@@ -473,7 +483,11 @@ void addNode(city* cityArray, int j, listNode* fatherNode, int *dist, int depth,
   listNode *prevNode = NULL;
   listNode *auxNode;
   int *hist = histogram;
+#ifdef WINDOWS
+  int histogram2[vectorLength];
+#else  
   int histogram2[cityNum];
+#endif //WINDOWS
   int costToMe = cityArray[fatherNode->idCurrentCity].distance[j];
   int currentCity = cityArray[fatherNode->idCurrentCity].nextCity[j];
   int currentCost = fatherNode->cost + costToMe;
