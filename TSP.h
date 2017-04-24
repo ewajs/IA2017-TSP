@@ -16,9 +16,13 @@
 #define HEURISTICS_ON  //Para implementar heuristica HEURISTICS_ON
 //#define DEBUG  //Para imprimir LISTAS ABIERTA y CERRADA y otra info
 #define NO_REPETIDOS //Si esta activo no agrega Nodos de estados repetidos
+/* #define CIUDADES //Imprime las distancias de cada ciudad a las demas */
 //#define WINDOWS //Para compilar en entornos sin soporte para VLAs (arrays de long variables)
+#define ESTADISTICA //Para mostrar info relevante al problema como media de las distancias entre ciudades y cantidad de caminos posibles
+#define INFO_EXTRA //Para mostrar Cantidad de Nodos creados, eliminados, removidos y descartados
 
-#define vectorLength  20
+#define vectorLength  20 //Longitud para vectores de longitud fija
+
 /* Variable type Declarations */
 typedef struct {
   int id;           // ID de la ciudad
