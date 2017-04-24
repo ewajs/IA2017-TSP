@@ -43,7 +43,7 @@ int main(int argc, char* argv[])
   importFile = fopen(argv[1], "r");
   if (!importFile)
     {
-      printf("EL ARCHIVO %s NO EXISTE\n",argv[1]);
+      printf("NO SE ENCONTRO EL ARCHIVO %s\n",argv[1]);
       return 0;
     }
   fgets(importText, 1024, importFile);
@@ -162,7 +162,10 @@ int findMinimumDistances(city* cityArray, int depth, int currentCity, int* histo
   else
     {
       if (depth == cityNum) //Si estoy en el ultimo nodo = GOAL
-        return (0);
+        {
+          histogram[startNode] = 1; //restauro histograma
+          return (0);
+        }
       else                 //Estoy en la ultima ciudad antes del GOAL
         {
           if ( currentCity > startNode)
@@ -171,6 +174,7 @@ int findMinimumDistances(city* cityArray, int depth, int currentCity, int* histo
             distance = cityArray[currentCity].distance[startNode-1];
         }
     }
+  histogram[startNode] = 1; //restauro histograma
   return (distance);
 }
 
