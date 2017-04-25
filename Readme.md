@@ -19,7 +19,8 @@ Para compilar navegar hasta el directorio de la repo y utilizar:
 
 
 En **Windows** sin full support para C99 a partir de VisualStudio 2015:
-En el archivo TSP.h descomentar #define WINDOWS
+En el archivo TSP.h descomentar
+	#define WINDOWS
 Luego en la consola de Desarrollador de VisualStudio:
 
       cl TSP.c
@@ -43,73 +44,86 @@ la Distancia minima usada para h[0]; y los resultados del algoritmo con informac
 para benchmarking.
 
 Ej.
+	------------------------------------------------------------
+	Archivo Inputs/TSP_IN_03.txt
+	------------------------------------------------------------
 
-	***************  Ciudades  ***************
-	Ciudad 0:
-		 Distancia a Ciudad 1: 5
-		 Distancia a Ciudad 2: 15
-		 Distancia a Ciudad 3: 17
-		 Distancia a Ciudad 4: 7
-		 Distancia a Ciudad 5: 6
+
+	********************  Ciudades  ********************
 
 	Ciudad 1:
-		 Distancia a Ciudad 0: 5
-		 Distancia a Ciudad 2: 6
-		 Distancia a Ciudad 3: 19
-		 Distancia a Ciudad 4: 20
+		 Distancia a Ciudad 2: 5
+		 Distancia a Ciudad 3: 15
+		 Distancia a Ciudad 4: 17
 		 Distancia a Ciudad 5: 7
+		 Distancia a Ciudad 6: 6
 
 	Ciudad 2:
-		 Distancia a Ciudad 0: 15
-		 Distancia a Ciudad 1: 6
-		 Distancia a Ciudad 3: 3
-		 Distancia a Ciudad 4: 21
-		 Distancia a Ciudad 5: 5
+		 Distancia a Ciudad 1: 5
+		 Distancia a Ciudad 3: 6
+		 Distancia a Ciudad 4: 19
+		 Distancia a Ciudad 5: 20
+		 Distancia a Ciudad 6: 7
 
 	Ciudad 3:
-		 Distancia a Ciudad 0: 17
-		 Distancia a Ciudad 1: 19
-		 Distancia a Ciudad 2: 3
-		 Distancia a Ciudad 4: 4
-		 Distancia a Ciudad 5: 7
+		 Distancia a Ciudad 1: 15
+		 Distancia a Ciudad 2: 6
+		 Distancia a Ciudad 4: 3
+		 Distancia a Ciudad 5: 21
+		 Distancia a Ciudad 6: 5
 
 	Ciudad 4:
-		 Distancia a Ciudad 0: 7
-		 Distancia a Ciudad 1: 20
-		 Distancia a Ciudad 2: 21
-		 Distancia a Ciudad 3: 4
-		 Distancia a Ciudad 5: 8
+		 Distancia a Ciudad 1: 17
+		 Distancia a Ciudad 2: 19
+		 Distancia a Ciudad 3: 3
+		 Distancia a Ciudad 5: 4
+		 Distancia a Ciudad 6: 7
 
 	Ciudad 5:
-		 Distancia a Ciudad 0: 6
 		 Distancia a Ciudad 1: 7
-		 Distancia a Ciudad 2: 5
-		 Distancia a Ciudad 3: 7
-		 Distancia a Ciudad 4: 8
-	*******************************************
+		 Distancia a Ciudad 2: 20
+		 Distancia a Ciudad 3: 21
+		 Distancia a Ciudad 4: 4
+		 Distancia a Ciudad 6: 8
 
-	**************  Estadística  **************
+	Ciudad 6:
+		 Distancia a Ciudad 1: 6
+		 Distancia a Ciudad 2: 7
+		 Distancia a Ciudad 3: 5
+		 Distancia a Ciudad 4: 7
+		 Distancia a Ciudad 5: 8
+	*****************************************************
+
+	*******************  Estadística  *******************
 	Cantidad de ciudades: 6
 	Cantidad de conexiones: 15
 	Cantidad de caminos posibles: 60
 	Media de Distancias: 10.000000
 	Desvío Estándar de Distancias: 6.186006
-	*******************************************
+	*****************************************************
 
-	**************  Heurística  ***************
-	h(0) = 24
-	*******************************************
+	*******************  Heurística  ********************
+	               Path Mayorante (Greedy)
+	                   1;2;3;4;5;6;1;
 
-	**************  Resultados  ***************
-	Camino Óptimo: 0;4;3;2;5;1;0;
-	Distancia Total = 31
-	Nodos Creados: 50
+	Distancia Mayorante (Greedy): 32
+	h(0) = 27
+	*****************************************************
+
+	*******************  Resultados  ********************
+	                   Camino Óptimo
+	                   1;5;4;3;6;2;1;
+
+	Distancia Óptima = 31
 	Nodos Abiertos: 24
-	Nodos Eliminados: 6
-	Nodos Removidos: 1
-	Nodos Descartados: 5
-	Tiempo de ejecucion = 0.509000 ms
-	*******************************************`
+	Nodos Creados: 37
+	Nodos Eliminados: 19
+	Nodos Removidos: 2
+	Nodos Descartados por Restricción Mayorante: 14
+	Nodos Descartados por camino parcial subóptimo: 3
+	Tiempo de ejecucion = 0.462000 ms
+	*****************************************************
+
 ### Modificando TSP.h
 
 El archivo TSP.h tiene varios defines que se pueden comentar o descomentar para
@@ -118,6 +132,11 @@ modificar la informacion de salida o la declaracion de variables. A saber:
 #define HEURISTICS_ON
  Si esta habilitado se utiliza una heuristica distinta de 0.
  Si esta comentado h(n) = 0;
+
+#define MAYORANTE_ON
+ Si esta habilitado se utiliza un algoritmo greedy para determinar un path mayorante
+ Si esta comentado no se descartan nodos por Restriccion Mayorante.
+ Solo funciona con HEURISTICS_ON, en otro caso, se ignora.
 
 #define NO_REPETIDOS
  Si esta habilitado no se crean nodos repetidos o se reemplazan existentes
@@ -139,7 +158,7 @@ modificar la informacion de salida o la declaracion de variables. A saber:
 
 #define INFO_EXTRA
  Habilita la impresion de informacion acerca del comportamiento del algoritmo como ser la cantidad de nodos creados, eliminados, removidos y descartados.
- 
+
 ### Modificando TSP.c
 
 El programa se maneja con 2 listas una openList y otra closedList.

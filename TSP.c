@@ -12,9 +12,11 @@
 
 int cityNum;
 int startNode =0;
+int majorant;
+int* greedyPath;
 
 // Variables para Benchmarking
-int createdNodes, deletedNodes, removedNodes;
+int createdNodes, deletedNodes, removedNodes, majorantNodes;
 double mean, sd;
 int main(int argc, char* argv[])
 {
@@ -27,11 +29,12 @@ int main(int argc, char* argv[])
   mean = 0;
   sd = 0;
 #endif //ESTADISTICA
-#ifdef INFO_EXTRA  
+#ifdef INFO_EXTRA
   createdNodes = 0;
   deletedNodes = 0;
   removedNodes = 0;
-#endif //INFO_EXTRA  
+  majorantNodes = 0;
+#endif //INFO_EXTRA
   if(argc != 2)
   {
     printf("Debe pasar el archivo como parámetro\n");
@@ -52,9 +55,8 @@ int main(int argc, char* argv[])
   cityNum = atoi(importText);
   printf("------------------------------------------------------------\n");
   printf("Archivo %s\n",argv[1]);
-  printf("------------------------------------------------------------\n");
-  printf("Cantidad de ciudades: %d\n", cityNum);
-#ifdef WINDOWS  
+  printf("------------------------------------------------------------\n\n");
+#ifdef WINDOWS
   city cityArray[vectorLength];
 #else
   city cityArray[cityNum];
@@ -62,13 +64,182 @@ int main(int argc, char* argv[])
   initializeCity(cityArray);
   fgets(importText, 1024*8, importFile);
   populateCity(cityArray, importText);
+#ifdef MAYORANTE_ON
+  greedyPath = malloc(sizeof(int)*(cityNum+1));
+  majorant = findMajorantRestriction(cityArray); // Algoritmo Greedy para obtener una restricción mayorante.
+#endif // MAYORANTE_ON
   TSP(cityArray);
   clock_t endTime = clock();
   //********** TERMINE DE CONTAR TIEMPO ACA **********
   double executionTime = (double)1000*(endTime - startTime) / CLOCKS_PER_SEC;
   printf("Tiempo de ejecucion = %f ms\n", executionTime);
-  printf("*******************************************\n");
+  printf("*****************************************************\n");
   return 0;
+}
+
+/*--------------------------------------------------------------------------------
+ * Function:    initializeCity
+ *
+ * @brief       Reserva lugar en memoria del vector de ciudades y guarda su id.
+ *
+ * @param[in]	city* cityArray	- Array donde se va a guardar info de todas las
+ *                                ciudades.
+ *
+ *
+ *
+ * @return 	NONE
+ --------------------------------------------------------------------------------*/
+void initializeCity(city* cityArray)
+{
+  for(int i = 0; i < cityNum; i++)
+  {
+    cityArray[i].nextCity = malloc((cityNum - 1 )*sizeof(int));
+    cityArray[i].distance = malloc((cityNum - 1 )*sizeof(int));
+    cityArray[i].id = i;
+  }
+  return;
+}
+
+
+/*--------------------------------------------------------------------------------
+ * Function:    populateCity
+ *
+ * @brief       Completa el array de ciudades con la informacion pasada en data.
+ *
+ * @param[in]	city* cityArray	- Array a completar con la info de todas las ciudades.
+ * @param[in]	int cityNum     - Cantidad de ciudades.
+ * @param[in]	char* data      - Puntero a inicio de informacion a guardar.
+ *
+ *
+ * @return 	NONE
+ --------------------------------------------------------------------------------*/
+void populateCity(city* cityArray, char* data)
+{
+
+  int distances;
+  char* delimiter;
+
+  int connections = 0;
+  for(int i = 0; i < cityNum - 1; i++)
+  {
+    for(int j = i + 1; j < cityNum; j++)
+    {
+      delimiter = strchr(data,';');
+      *delimiter = '\0';
+      distances = atoi(data);
+      data = delimiter + 1;
+      cityArray[i].distance[j-1] = distances;
+      cityArray[i].nextCity[j-1] = j;
+
+      cityArray[j].distance[i] = distances;
+      cityArray[j].nextCity[i] = i;
+#ifdef ESTADISTICA
+      mean = mean + distances;
+      sd = sd + distances*distances;
+      connections++;  // Variable que cuenta la cantidad de conexiones entre ciudades
+#endif //ESTADISTICA
+    }
+  }
+#ifdef ESTADISTICA
+  mean = mean/connections; //Calcula la media de las distancias entre ciudades
+  sd = sd/connections;
+  sd = sd - mean*mean;
+  sd = sqrt(sd);          //Calcula el desvio standard
+#endif //ESTADISTICA
+#ifdef CIUDADES
+  printf("\n********************  Ciudades  ********************\n");
+  for(int i = 0; i < cityNum; i++)
+  {
+    printf("\nCiudad %d:\n", cityArray[i].id+1);
+    for(int j = 0; j < cityNum-1; j++)
+      {
+      printf("\t Distancia a Ciudad %d: %d\n", cityArray[i].nextCity[j]+1, cityArray[i].distance[j]);
+      }
+  }
+#endif //CIUDADDES
+#ifdef ESTADISTICA
+  printf("*****************************************************\n");
+  printf("\n*******************  Estadística  *******************\n");
+  printf("Cantidad de ciudades: %d\n", cityNum);
+  printf("Cantidad de conexiones: %d\n", connections);
+  printf("Cantidad de caminos posibles: %ld\n", factorial((long int) (cityNum - 1))/2);
+  printf("Media de Distancias: %f\n", mean);
+  printf("Desvío Estándar de Distancias: %f\n", sd);
+  printf("*****************************************************\n");
+#endif //ESTADISTICA
+  return;
+
+}
+
+
+
+/*--------------------------------------------------------------------------------
+ * Function:    findMajorantRestriction
+ *
+ * @brief       Algoritmo Greedy para encontrar una restriccion mayorante.
+ *
+ *
+ * @param[in]	city* cityArray	- Array que contiene la info de todas las ciudades.
+ *
+ * @return 	int majorant    - Distancia mayorante obtenida
+ --------------------------------------------------------------------------------*/
+int findMajorantRestriction(city* cityArray)
+{
+  int histogram[cityNum], currentCity = startNode;
+  int greedyDistance = 0, minimumAvailablePath, nextCity;
+
+  for(int i = 0; i < cityNum; i++)
+  {
+    histogram[i] = 0;
+  }
+  histogram[startNode] = 1;
+
+  for(int i = 0; i < cityNum - 1; i++)
+  {
+    int aux = 0;
+    while(histogram[aux]) // primer ciudad no visitada
+      aux++;
+    if(aux > currentCity) // preparo índice
+      aux--;
+    minimumAvailablePath = cityArray[currentCity].distance[aux]; // primer distancia
+    nextCity = cityArray[currentCity].nextCity[aux];
+    for(int j = aux+1; j < cityNum; j++)
+    {
+      if (j > currentCity)
+      {
+        if(!histogram[j] && minimumAvailablePath > cityArray[currentCity].distance[j-1])
+        {
+          minimumAvailablePath = cityArray[currentCity].distance[j-1];
+          nextCity = cityArray[currentCity].nextCity[j-1];
+        }
+      }else
+      {
+        if(!histogram[j] && minimumAvailablePath > cityArray[currentCity].distance[j])
+        {
+          minimumAvailablePath = cityArray[currentCity].distance[j];
+          nextCity = cityArray[currentCity].nextCity[j];
+        }
+      }
+    }
+    //printf("Voy de %d a %d en: %d\n", currentCity+1, nextCity+1, minimumAvailablePath);
+    histogram[nextCity] = 1;
+    greedyPath[i] = currentCity;
+    greedyDistance += minimumAvailablePath;
+    currentCity = nextCity;
+  }
+  // falta el retorno a la ciudad de origen
+  greedyPath[cityNum - 1] = currentCity;
+  greedyPath[cityNum] = startNode;
+  if(currentCity < startNode)
+  {
+    greedyDistance += cityArray[currentCity].distance[startNode-1];
+    //printf("Voy de %d a %d en: %d\n", currentCity+1, startNode+1, cityArray[currentCity].distance[startNode-1]);
+  }else
+  {
+    greedyDistance += cityArray[currentCity].distance[startNode];
+    //printf("Voy de %d a %d en: %d\n", currentCity+1, startNode+1, cityArray[currentCity].distance[startNode]);
+  }
+  return greedyDistance;
 }
 
 
@@ -179,98 +350,6 @@ int findMinimumDistances(city* cityArray, int depth, int currentCity, int* histo
 }
 
 
-/*--------------------------------------------------------------------------------
- * Function:    initializeCity
- *
- * @brief       Reserva lugar en memoria del vector de ciudades y guarda su id.
- *
- * @param[in]	city* cityArray	- Array donde se va a guardar info de todas las
- *                                ciudades.
- *
- *
- *
- * @return 	NONE
- --------------------------------------------------------------------------------*/
-void initializeCity(city* cityArray)
-{
-  for(int i = 0; i < cityNum; i++)
-  {
-    cityArray[i].nextCity = malloc((cityNum - 1 )*sizeof(int));
-    cityArray[i].distance = malloc((cityNum - 1 )*sizeof(int));
-    cityArray[i].id = i;
-  }
-  return;
-}
-
-
-/*--------------------------------------------------------------------------------
- * Function:    populateCity
- *
- * @brief       Completa el array de ciudades con la informacion pasada en data.
- *
- * @param[in]	city* cityArray	- Array a completar con la info de todas las ciudades.
- * @param[in]	int cityNum     - Cantidad de ciudades.
- * @param[in]	char* data      - Puntero a inicio de informacion a guardar.
- *
- *
- * @return 	NONE
- --------------------------------------------------------------------------------*/
-void populateCity(city* cityArray, char* data)
-{
-
-  int distances;
-  char* delimiter;
-
-  int connections = 0;
-  for(int i = 0; i < cityNum - 1; i++)
-  {
-    for(int j = i + 1; j < cityNum; j++)
-    {
-      delimiter = strchr(data,';');
-      *delimiter = '\0';
-      distances = atoi(data);
-      data = delimiter + 1;
-      cityArray[i].distance[j-1] = distances;
-      cityArray[i].nextCity[j-1] = j;
-
-      cityArray[j].distance[i] = distances;
-      cityArray[j].nextCity[i] = i;
-#ifdef ESTADISTICA
-      mean = mean + distances;
-      sd = sd + distances*distances;
-      connections++;  // Variable que cuenta la cantidad de conexiones entre ciudades
-#endif //ESTADISTICA      
-    }
-  }
-#ifdef ESTADISTICA
-  mean = mean/connections; //Calcula la media de las distancias entre ciudades
-  sd = sd/connections;     
-  sd = sd - mean*mean;
-  sd = sqrt(sd);          //Calcula el desvio standard
-#endif //ESTADISTICA
-#ifdef CIUDADES
-  printf("\n***************  Ciudades  ***************\n");
-  for(int i = 0; i < cityNum; i++)
-  {
-    printf("\nCiudad %d:\n", cityArray[i].id+1);
-    for(int j = 0; j < cityNum-1; j++)
-      {
-      printf("\t Distancia a Ciudad %d: %d\n", cityArray[i].nextCity[j]+1, cityArray[i].distance[j]);
-      }
-  }
-#endif //CIUDADDES
-#ifdef ESTADISTICA  
-  printf("*******************************************\n");
-  printf("\n**************  Estadística  **************\n");
-  printf("Cantidad de conexiones: %d\n", connections);
-  printf("Cantidad de caminos posibles: %ld\n", factorial((long int) (cityNum - 1))/2);
-  printf("Media de Distancias: %f\n", mean);
-  printf("Desvío Estándar de Distancias: %f\n", sd);
-  printf("*******************************************\n");
-#endif //ESTADISTICA
-  return;
-
-}
 
 /*--------------------------------------------------------------------------------
  * Function:    TSP
@@ -311,13 +390,23 @@ void TSP(city* cityArray)
 
 #ifdef HEURISTICS_ON
   int minDistance = findMinimumDistances(cityArray, depth, startNode, histogram); //Hallamos h[0] y llenamos minimumDistanesArray con la segunda menor distancia de cada ciudad
-  printf("\n**************  Heurística  ***************\n");
-  printf("h(0) = %d\n",minDistance);
-  printf("*******************************************\n");
+  printf("\n*******************  Heurística  ********************\n");
+#ifdef MAYORANTE_ON
+  printf("               Path Mayorante (Greedy)\n");
+  for(int i = 0; i < (53 - (2*(cityNum+1) + cityNum/10 * (cityNum+1) % 10))/2; i ++)
+    printf(" "); // espacios para centrar path
+  for(int i = 0; i < cityNum+1;i++)
+  {
+    printf("%d;", greedyPath[i]+1);
+  }
+  printf("\n\nDistancia Mayorante (Greedy): %d\n", majorant);
+#endif // MAYORANTE_ON
+  printf("h(0) = %d",minDistance);
+  printf("\n*****************************************************\n");
 #else
-  printf("\n************  Sin Heurística  *************\n");
+  printf("\n*****************  Sin Heurística  ******************\n");
 #endif //HEURISTICS_ON
-  
+
 #ifdef DEBUG
    printf("START NODE = %d\n",cityArray[startNode].id);
 #endif //DEBUG
@@ -367,7 +456,7 @@ void TSP(city* cityArray)
           }
         currentNode = currentNode->father;//Paso un nivel mas arriba
       }
-      
+
     ////////////////////
     if(openList->idCurrentCity == startNode && depth > 1) // Encontre GOAL!!!!
       {
@@ -380,20 +469,25 @@ void TSP(city* cityArray)
         printf("--------------- Closed  List ---------------\n");
         printList(closedList);
 #endif //DEBUG
-        printf("\n**************  Resultados  ***************\n");
-        printf("Camino Óptimo: ");
+        printf("\n*******************  Resultados  ********************\n");
+        printf("                   Camino Óptimo\n");
+        for(int i = 0; i < (53 - (2*(cityNum+1) + cityNum/10 * (cityNum+1) % 10))/2; i ++)
+          printf(" "); // espacios para centrar path
         while(depth)
           {
             printf("%d;",path[depth-1]+1);
             depth--;
           }
-        printf("\nDistancia Total = %d\n",openList->cost);
+        printf("\n\nDistancia Óptima = %d\n",openList->cost);
         printf("Nodos Abiertos: %d\n",NA);
-#ifdef INFO_EXTRA        
+#ifdef INFO_EXTRA
         printf("Nodos Creados: %d\n",createdNodes);
         printf("Nodos Eliminados: %d\n",deletedNodes);
         printf("Nodos Removidos: %d\n",removedNodes);
-        printf("Nodos Descartados: %d\n",deletedNodes - removedNodes);
+#ifdef MAYORANTE_ON
+        printf("Nodos Descartados por Restricción Mayorante: %d\n", majorantNodes);
+#endif // MAYORANTE_ON
+        printf("Nodos Descartados por camino parcial subóptimo: %d\n",deletedNodes - removedNodes - majorantNodes);
 #endif //INFO_EXTRA
         //Liberamos memoria
 #ifdef NO_REPETIDOS
@@ -515,14 +609,32 @@ void addNode(city* cityArray, int j, listNode* fatherNode, int *dist, int depth,
   listNode *prevNode = NULL;
   listNode *auxNode;
   int *hist = histogram;
+  int heuristic = 0;
+
+  int costToMe = cityArray[fatherNode->idCurrentCity].distance[j]; //Costo de viajar de n-1 a n
+  int currentCity = cityArray[fatherNode->idCurrentCity].nextCity[j];
+  int currentCost = fatherNode->cost + costToMe; // g(n)
+#ifdef HEURISTICS_ON
+  heuristic = findMinimumDistances(cityArray, depth, currentCity, hist);
+  if(fatherNode->heuristic > (heuristic + costToMe)) //Verificamos que h(n) sea consistente
+    heuristic = fatherNode->heuristic - costToMe;
+  if (heuristic < 0) //La heuristica tiene que ser siempre >= 0
+    heuristic = 0;
+#endif //HEURISTICS_ON
+#ifdef MAYORANTE_ON
+  if(heuristic + costToMe > majorant)
+  {
+    majorantNodes++;
+    deletedNodes++;
+    return;
+  }
+#endif // MAYORANTE_ON
 #ifdef WINDOWS
   int histogram2[vectorLength];
-#else  
+#else
   int histogram2[cityNum];
 #endif //WINDOWS
-  int costToMe = cityArray[fatherNode->idCurrentCity].distance[j]; //Costo de viajar de n-1 a n
-  int currentCity = cityArray[fatherNode->idCurrentCity].nextCity[j]; 
-  int currentCost = fatherNode->cost + costToMe; // g(n)
+
 #ifdef NO_REPETIDOS
   depthNode* currDepthListItem = depthList[depth-1]; //Apunto a la lista de profundiad correspondiente a este nivel
 
@@ -598,7 +710,7 @@ void addNode(city* cityArray, int j, listNode* fatherNode, int *dist, int depth,
     currDepthListItem = currDepthListItem->nextDepthNode;
   }
 #endif //NO_REPETIDOS
-  
+
   // Si nunca explore el camino o el camino explorado era de mayor costo. Agrego nuevo Nodo a la lista abierta.
 #ifdef INFO_EXTRA
   createdNodes++; //Contador de nodos creados
@@ -606,16 +718,7 @@ void addNode(city* cityArray, int j, listNode* fatherNode, int *dist, int depth,
   listNode* currentNode =(listNode*) malloc(sizeof(listNode));
   currentNode->   idCurrentCity     = currentCity;
   currentNode->   cost              = currentCost;
-#ifdef HEURISTICS_ON
-  currentNode->heuristic = findMinimumDistances(cityArray, depth, currentCity, hist);
-  if(fatherNode->heuristic > (currentNode->heuristic + costToMe)) //Verificamos que h(n) sea consistente
-     currentNode->heuristic = fatherNode->heuristic - costToMe;
-  if (currentNode->heuristic < 0) //La heuristica tiene que ser siempre >= 0
-    currentNode->heuristic = 0;
-#else
-  currentNode->   heuristic         = 0;
-#endif //HEURISTICS_ON
-
+  currentNode->   heuristic         = heuristic;
   currentNode->   isFather          = 0;
   currentNode->   father            = fatherNode;
   fatherNode->    isFather          = 1;
