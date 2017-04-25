@@ -156,11 +156,11 @@ modificar la informacion de salida o la declaracion de variables. A saber:
 
 #### #define ESTADISTICA
 
-	 Habilita la impresion de datos como la media de las distancias entre ciudades, el desvio standard, la cantidad de caminos posibles y la cantidad de conexiones posibles para la cantidad de ciudades dadas
+ Habilita la impresion de datos como la media de las distancias entre ciudades, el desvio standard, la cantidad de caminos posibles y la cantidad de conexiones posibles para la cantidad de ciudades dadas
 
 #### #define INFO_EXTRA
 
-	 Habilita la impresion de informacion acerca del comportamiento del algoritmo como ser la cantidad de nodos creados, eliminados, removidos y descartados.
+ Habilita la impresion de informacion acerca del comportamiento del algoritmo como ser la cantidad de nodos creados, eliminados, removidos y descartados.
 
 #### #define DEBUG
 
