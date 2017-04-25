@@ -130,13 +130,13 @@ Ej.
 El archivo TSP.h tiene varios defines que se pueden comentar o descomentar para
 modificar la informacion de salida o la declaracion de variables. A saber:
 
-#define HEURISTICS_ON
+#### #define HEURISTICS_ON
 
  Si esta habilitado se utiliza una heuristica distinta de 0.
 
  Si esta comentado h(n) = 0;
 
-#define MAYORANTE_ON
+#### #define MAYORANTE_ON
 
  Si esta habilitado se utiliza un algoritmo greedy para determinar un path mayorante
 
