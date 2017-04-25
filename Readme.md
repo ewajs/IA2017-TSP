@@ -44,6 +44,7 @@ la Distancia minima usada para h[0]; y los resultados del algoritmo con informac
 para benchmarking.
 
 Ej.
+
 	------------------------------------------------------------
 	Archivo Inputs/TSP_IN_03.txt
 	------------------------------------------------------------
@@ -130,33 +131,46 @@ El archivo TSP.h tiene varios defines que se pueden comentar o descomentar para
 modificar la informacion de salida o la declaracion de variables. A saber:
 
 #define HEURISTICS_ON
+
  Si esta habilitado se utiliza una heuristica distinta de 0.
+
  Si esta comentado h(n) = 0;
 
 #define MAYORANTE_ON
+
  Si esta habilitado se utiliza un algoritmo greedy para determinar un path mayorante
+
  Si esta comentado no se descartan nodos por Restriccion Mayorante.
+
  Solo funciona con HEURISTICS_ON, en otro caso, se ignora.
 
 #define NO_REPETIDOS
+
  Si esta habilitado no se crean nodos repetidos o se reemplazan existentes
+
  Si esta comentado se crean todos los nodos sin importar si estan repetidos
 
 #define DEBUG
+
  Si esta habilitado se muestra informacion adicional de las listas abierta y
  cerrada.
+
  ** Tener en cuenta que para algunos problemas la cantidad de Nodos creados es grande **
 
 #define CIUDADES
+
  Habilita la impresion del detalle de las distancias entre ciudades
 
 #define WINDOWS
+
  Establece longitudes fijas a los vectores para poder compilar en entornos sin soporte a VLAs
 
 #define ESTADISTICA
+
  Habilita la impresion de datos como la media de las distancias entre ciudades, el desvio standard, la cantidad de caminos posibles y la cantidad de conexiones posibles para la cantidad de ciudades dadas
 
 #define INFO_EXTRA
+
  Habilita la impresion de informacion acerca del comportamiento del algoritmo como ser la cantidad de nodos creados, eliminados, removidos y descartados.
 
 ### Modificando TSP.c
