@@ -30,14 +30,14 @@ int main(int argc, char* argv[])
   sd = 0;
 #endif //ESTADISTICA
 #ifdef INFO_EXTRA
-  createdNodes = 0;
+  createdNodes = 1; // el primero no es contado así que lo agregamos
   deletedNodes = 0;
   removedNodes = 0;
   majorantNodes = 0;
 #endif //INFO_EXTRA
   if(argc != 2)
   {
-    printf("Debe pasar el archivo como parámetro\n");
+    printf("Error: Debe pasar el archivo como parámetro\n");
     return 1;
   }
   //********** EMPIEZO A CONTAR TIEMPO DESDE ACA **********
@@ -46,7 +46,7 @@ int main(int argc, char* argv[])
   importFile = fopen(argv[1], "r");
   if (!importFile)
     {
-      printf("NO SE ENCONTRO EL ARCHIVO %s\n",argv[1]);
+      printf("Error: No se encontró el archivo %s\n",argv[1]);
       return 0;
     }
   fgets(importText, 1024, importFile);
@@ -479,9 +479,9 @@ void TSP(city* cityArray)
             depth--;
           }
         printf("\n\nDistancia Óptima = %d\n",openList->cost);
+        printf("Nodos Creados: %d\n",createdNodes);
         printf("Nodos Abiertos: %d\n",NA);
 #ifdef INFO_EXTRA
-        printf("Nodos Creados: %d\n",createdNodes);
         printf("Nodos Eliminados: %d\n",deletedNodes);
         printf("Nodos Removidos: %d\n",removedNodes);
 #ifdef MAYORANTE_ON
