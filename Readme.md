@@ -167,7 +167,7 @@ modificar la informacion de salida o la declaracion de variables. A saber:
  Si esta habilitado se muestra informacion adicional de las listas abierta y
  cerrada.
 
- ** Tener en cuenta que para algunos problemas la cantidad de Nodos creados es grande **
+ **Tener en cuenta que para algunos problemas la cantidad de Nodos creados es grande**
 
 #### #define WINDOWS
 
