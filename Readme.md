@@ -144,34 +144,35 @@ modificar la informacion de salida o la declaracion de variables. A saber:
 
  Solo funciona con HEURISTICS_ON, en otro caso, se ignora.
 
-#define NO_REPETIDOS
+#### #define NO_REPETIDOS
 
  Si esta habilitado no se crean nodos repetidos o se reemplazan existentes
 
  Si esta comentado se crean todos los nodos sin importar si estan repetidos
 
-#define DEBUG
+#### #define CIUDADES
+
+  Habilita la impresion del detalle de las distancias entre ciudades
+
+#### #define ESTADISTICA
+
+	 Habilita la impresion de datos como la media de las distancias entre ciudades, el desvio standard, la cantidad de caminos posibles y la cantidad de conexiones posibles para la cantidad de ciudades dadas
+
+#### #define INFO_EXTRA
+
+	 Habilita la impresion de informacion acerca del comportamiento del algoritmo como ser la cantidad de nodos creados, eliminados, removidos y descartados.
+
+#### #define DEBUG
 
  Si esta habilitado se muestra informacion adicional de las listas abierta y
  cerrada.
 
  ** Tener en cuenta que para algunos problemas la cantidad de Nodos creados es grande **
 
-#define CIUDADES
+#### #define WINDOWS
 
- Habilita la impresion del detalle de las distancias entre ciudades
+ Establece longitudes fijas a los vectores para poder compilar en entornos sin soporte a VLAs.
 
-#define WINDOWS
-
- Establece longitudes fijas a los vectores para poder compilar en entornos sin soporte a VLAs
-
-#define ESTADISTICA
-
- Habilita la impresion de datos como la media de las distancias entre ciudades, el desvio standard, la cantidad de caminos posibles y la cantidad de conexiones posibles para la cantidad de ciudades dadas
-
-#define INFO_EXTRA
-
- Habilita la impresion de informacion acerca del comportamiento del algoritmo como ser la cantidad de nodos creados, eliminados, removidos y descartados.
 
 ### Modificando TSP.c
 
