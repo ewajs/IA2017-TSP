@@ -45,11 +45,6 @@ para benchmarking.
 
 Ej.
 
-	------------------------------------------------------------
-	Archivo Inputs/TSP_IN_03.txt
-	------------------------------------------------------------
-
-
 	********************  Ciudades  ********************
 
 	Ciudad 1:
@@ -103,26 +98,53 @@ Ej.
 	Desvío Estándar de Distancias: 6.186006
 	*****************************************************
 
+	*********************  Greedy  **********************
+	Ciudad Inicial: 1
+	Distancia: 32
+	Path: 1;2;3;4;5;6;1;
+
+	Ciudad Inicial: 2
+	Distancia: 43
+	Path: 2;1;6;3;4;5;2;
+
+	Ciudad Inicial: 3
+	Distancia: 31
+	Path: 3;4;5;1;2;6;3;
+
+	Ciudad Inicial: 4
+	Distancia: 43
+	Path: 4;3;6;1;2;5;4;
+
+	Ciudad Inicial: 5
+	Distancia: 43
+	Path: 5;4;3;6;1;2;5;
+
+	Ciudad Inicial: 6
+	Distancia: 31
+	Path: 6;3;4;5;1;2;6;
+
+	*****************************************************
+
 	*******************  Heurística  ********************
 	               Path Mayorante (Greedy)
-	                   1;2;3;4;5;6;1;
+	                   3;4;5;1;2;6;3;
 
-	Distancia Mayorante (Greedy): 32
+	Distancia Mayorante (Greedy): 31
 	h(0) = 27
 	*****************************************************
 
 	*******************  Resultados  ********************
 	                   Camino Óptimo
-	                   1;5;4;3;6;2;1;
+	                   3;4;5;1;2;6;3;
 
 	Distancia Óptima = 31
+	Nodos Creados: 38
 	Nodos Abiertos: 24
-	Nodos Creados: 37
-	Nodos Eliminados: 19
+	Nodos Eliminados: 20
 	Nodos Removidos: 2
-	Nodos Descartados por Restricción Mayorante: 14
+	Nodos Descartados por Restricción Mayorante: 15
 	Nodos Descartados por camino parcial subóptimo: 3
-	Tiempo de ejecucion = 0.462000 ms
+	Tiempo de ejecucion = 0.523000 ms
 	*****************************************************
 
 ### Modificando TSP.h
