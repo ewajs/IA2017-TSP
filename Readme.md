@@ -138,7 +138,8 @@ modificar la informacion de salida o la declaracion de variables. A saber:
 
 #### #define MAYORANTE_ON
 
- Si esta habilitado se utiliza un algoritmo greedy para determinar un path mayorante
+ Si esta habilitado se utiliza un algoritmo greedy para determinar un path mayorante, prueba con todas las posibles
+ ciudades iniciales y se queda con la mejor. La ciudad de inicio del A* sera la ciudad de inicio del mejor camino Greedy.
 
  Si esta comentado no se descartan nodos por Restriccion Mayorante.
 
@@ -185,6 +186,8 @@ en el que se guardan los caminos recorridos para descartar aquellos nodos que
 los repitan de manera menos eficiente. Nuevos nodos menos eficientes serán descartados y
 en caso de encontrarse un nodo menos eficiente en la lista abierta se lo remueve antes
 de insertar el nuevo nodo encontrado.
+
+Como restriccion mayorante se utiliza un algoritmo greedy que halla un camino suboptimo probando con todas las ciudades como ciudad inicial, la menor (y por lo tanto mejor) distancia se utiliza como restriccion mayorante (caminos incompletos que superan este valor son descartados). La ciudad de inicio del A* será la ciudad de inicio del mejor camino greedy (restriccion mayorante).
 
 
 La funcion que aplica el algoritmo de busqueda es:

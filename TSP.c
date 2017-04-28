@@ -11,7 +11,7 @@
 
 
 int cityNum;
-int startNode =0;
+int startNode = 0;
 int majorant;
 int* greedyPath;
 
@@ -67,6 +67,7 @@ int main(int argc, char* argv[])
 #ifdef MAYORANTE_ON
   greedyPath = malloc(sizeof(int)*(cityNum+1));
   majorant = findMajorantRestriction(cityArray); // Algoritmo Greedy para obtener una restricción mayorante.
+  startNode = greedyPath[0]; // Cargo la ciudad inicial del mejor Greedy
 #endif // MAYORANTE_ON
   TSP(cityArray);
   clock_t endTime = clock();
@@ -188,6 +189,7 @@ int findMajorantRestriction(city* cityArray)
   int histogram[cityNum], currentCity;
   int greedyDistance = 9999, minimumAvailablePath, nextCity;
   int auxPath[cityNum + 1], auxDistance;
+  printf("\n*********************  Greedy  **********************\n");
   for(int k = 0; k < cityNum; k++)
     {
       currentCity = k;
@@ -243,10 +245,10 @@ int findMajorantRestriction(city* cityArray)
           auxDistance += cityArray[currentCity].distance[k];
           //printf("Voy de %d a %d en: %d\n", currentCity+1, startNode+1, cityArray[currentCity].distance[startNode]);
         }
-      printf("Ciudad Inicial: %d - Distancia: %d - Path: ", k + 1, auxDistance);
+      printf("Ciudad Inicial: %d\nDistancia: %d\nPath: ", k + 1, auxDistance);
       for(int i = 0; i < cityNum + 1; i++)
         printf("%d;",auxPath[i]+1);
-      printf("\n");
+      printf("\n\n");
       if (auxDistance < greedyDistance)
         {
           greedyDistance = auxDistance;
@@ -254,6 +256,7 @@ int findMajorantRestriction(city* cityArray)
             greedyPath[i] = auxPath[i];
         }
     }
+  printf("*****************************************************\n");
   return greedyDistance;
 }
 
@@ -276,7 +279,6 @@ int findMinimumDistances(city* cityArray, int depth, int currentCity, int* histo
 {
   int distance = 0, i = 0,j = 0, k=0;
   int min1, min2, min = 0;
-
   if(depth < cityNum -1) //Entra si el nodo no es el GOAL o la anteultima ciudad
     {
       histogram[startNode] = 0;  //Tiene en cuenta las distancias a la ciudad de origen
