@@ -185,60 +185,75 @@ void populateCity(city* cityArray, char* data)
  --------------------------------------------------------------------------------*/
 int findMajorantRestriction(city* cityArray)
 {
-  int histogram[cityNum], currentCity = startNode;
-  int greedyDistance = 0, minimumAvailablePath, nextCity;
-
-  for(int i = 0; i < cityNum; i++)
-  {
-    histogram[i] = 0;
-  }
-  histogram[startNode] = 1;
-
-  for(int i = 0; i < cityNum - 1; i++)
-  {
-    int aux = 0;
-    while(histogram[aux]) // primer ciudad no visitada
-      aux++;
-    if(aux > currentCity) // preparo índice
-      aux--;
-    minimumAvailablePath = cityArray[currentCity].distance[aux]; // primer distancia
-    nextCity = cityArray[currentCity].nextCity[aux];
-    for(int j = aux+1; j < cityNum; j++)
+  int histogram[cityNum], currentCity;
+  int greedyDistance = 9999, minimumAvailablePath, nextCity;
+  int auxPath[cityNum + 1], auxDistance;
+  for(int k = 0; k < cityNum; k++)
     {
-      if (j > currentCity)
-      {
-        if(!histogram[j] && minimumAvailablePath > cityArray[currentCity].distance[j-1])
+      currentCity = k;
+      auxDistance = 0;
+      for(int i = 0; i < cityNum; i++)
         {
-          minimumAvailablePath = cityArray[currentCity].distance[j-1];
-          nextCity = cityArray[currentCity].nextCity[j-1];
+          histogram[i] = 0;
         }
-      }else
-      {
-        if(!histogram[j] && minimumAvailablePath > cityArray[currentCity].distance[j])
+      histogram[k] = 1;
+
+      for(int i = 0; i < cityNum - 1; i++)
         {
-          minimumAvailablePath = cityArray[currentCity].distance[j];
-          nextCity = cityArray[currentCity].nextCity[j];
+          int aux = 0;
+          while(histogram[aux]) // primer ciudad no visitada
+            aux++;
+          if(aux > currentCity) // preparo índice
+            aux--;
+          minimumAvailablePath = cityArray[currentCity].distance[aux]; // primer distancia
+          nextCity = cityArray[currentCity].nextCity[aux];
+          for(int j = aux+1; j < cityNum; j++)
+            {
+              if (j > currentCity)
+                {
+                  if(!histogram[j] && minimumAvailablePath > cityArray[currentCity].distance[j-1])
+                    {
+                      minimumAvailablePath = cityArray[currentCity].distance[j-1];
+                      nextCity = cityArray[currentCity].nextCity[j-1];
+                    }
+                }else
+                {
+                  if(!histogram[j] && minimumAvailablePath > cityArray[currentCity].distance[j])
+                    {
+                      minimumAvailablePath = cityArray[currentCity].distance[j];
+                      nextCity = cityArray[currentCity].nextCity[j];
+                    }
+                }
+            }
+          //printf("Voy de %d a %d en: %d\n", currentCity+1, nextCity+1, minimumAvailablePath);
+          histogram[nextCity] = 1;
+          auxPath[i] = currentCity;
+          auxDistance += minimumAvailablePath;
+          currentCity = nextCity;
         }
-      }
+      // falta el retorno a la ciudad de origen
+      auxPath[cityNum - 1] = currentCity;
+      auxPath[cityNum] = k; // k = startNode para esta iteracion
+      if(currentCity < k)
+        {
+          auxDistance += cityArray[currentCity].distance[k-1];
+          //printf("Voy de %d a %d en: %d\n", currentCity+1, startNode+1, cityArray[currentCity].distance[startNode-1]);
+        }else
+        {
+          auxDistance += cityArray[currentCity].distance[k];
+          //printf("Voy de %d a %d en: %d\n", currentCity+1, startNode+1, cityArray[currentCity].distance[startNode]);
+        }
+      printf("Ciudad Inicial: %d - Distancia: %d - Path: ", k + 1, auxDistance);
+      for(int i = 0; i < cityNum + 1; i++)
+        printf("%d;",auxPath[i]+1);
+      printf("\n");
+      if (auxDistance < greedyDistance)
+        {
+          greedyDistance = auxDistance;
+          for(int i = 0; i < cityNum+1; i++)
+            greedyPath[i] = auxPath[i];
+        }
     }
-    //printf("Voy de %d a %d en: %d\n", currentCity+1, nextCity+1, minimumAvailablePath);
-    histogram[nextCity] = 1;
-    greedyPath[i] = currentCity;
-    greedyDistance += minimumAvailablePath;
-    currentCity = nextCity;
-  }
-  // falta el retorno a la ciudad de origen
-  greedyPath[cityNum - 1] = currentCity;
-  greedyPath[cityNum] = startNode;
-  if(currentCity < startNode)
-  {
-    greedyDistance += cityArray[currentCity].distance[startNode-1];
-    //printf("Voy de %d a %d en: %d\n", currentCity+1, startNode+1, cityArray[currentCity].distance[startNode-1]);
-  }else
-  {
-    greedyDistance += cityArray[currentCity].distance[startNode];
-    //printf("Voy de %d a %d en: %d\n", currentCity+1, startNode+1, cityArray[currentCity].distance[startNode]);
-  }
   return greedyDistance;
 }
 
