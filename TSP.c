@@ -21,33 +21,30 @@ double mean, sd;
 int main(int argc, char* argv[])
 {
   FILE *importFile, *outputFile;
-  char importText[1024*8], base[] = "TSP_IN_RAND1_", ext[] = ".txt", filename[20] = "TSP_IN_RAND1_4.txt";
+  char importText[1024*8], base[] = "Inputs/TSP_IN_", ext[] = ".txt", filename[40] = "Inputs/TSP_IN_0.txt";
   int len;
   char* delimiter;
 
-#ifdef ESTADISTICA
-  mean = 0;
-  sd = 0;
-#endif //ESTADISTICA
-#ifdef INFO_EXTRA
-  createdNodes = 1; // el primero no es contado así que lo agregamos
-  deletedNodes = 0;
-  removedNodes = 0;
-  majorantNodes = 0;
-#endif //INFO_EXTRA
 
-  outputFile = fopen("output.csv", "w");
+
+  outputFile = fopen("output0SMSNR.csv", "w");
   fprintf(outputFile,"Archivo;Cantidad de Ciudades;Conexiones;Caminos Posibles;\
   Distancia Media;Desvio Standard;Distancia Optima;Estimacion Heuristica;\
   Estimacion Mayorante;Tiempo de Ejecucion;Nodos Creados;Nodos Abiertos;\
   Nodos Eliminados;Nodos Removidos;Nodos Mayorantes;Nodos Suboptimos\n");
 // FOR BENCHMARKING
-  int fileIndex = 5;
+  int fileIndex = 1;
   while(NULL != (importFile = fopen(filename, "r")))
   {
     //********** EMPIEZO A CONTAR TIEMPO DESDE ACA **********
-
     clock_t startTime = clock();
+      mean = 0;
+      sd = 0;
+      createdNodes = 1; // el primero no es contado así que lo agregamos
+      deletedNodes = 0;
+      removedNodes = 0;
+      majorantNodes = 0;
+      NA = 0;
     // Imprimo todo lo que ya tengo
     fgets(importText, 1024, importFile);
     delimiter = strchr(importText,';');
@@ -70,8 +67,8 @@ int main(int argc, char* argv[])
     clock_t endTime = clock();
     //********** TERMINE DE CONTAR TIEMPO ACA **********
     double executionTime = (double)1000*(endTime - startTime) / CLOCKS_PER_SEC;
-    printf("Tiempo de ejecucion = %f ms\n", executionTime);
-    printf("*****************************************************\n");
+    //printf("Tiempo de ejecucion = %f ms\n", executionTime);
+    //printf("*****************************************************\n");
     fprintf(outputFile, "%s;%d;%d;%ld;%f;%f;%d;%d;%d;%f;%d;%d;%d;%d;%d;%d\n",\
     filename, cityNum,connections,factorial((long int) (cityNum - 1))/2,\
     mean,sd,optimalCost,minDistance,majorant,executionTime,createdNodes, NA, deletedNodes,\
@@ -79,8 +76,10 @@ int main(int argc, char* argv[])
     fclose(importFile);
     sprintf(filename, "%s%d%s",base,fileIndex,ext);
     fileIndex++;
-    printf("Archivo: %s\n",filename);
+    //printf("Archivo: %s\n",filename);
+    free(greedyPath);
   }
+  fclose(outputFile);
   return 0;
 }
 
@@ -165,14 +164,14 @@ void populateCity(city* cityArray, char* data)
   }
 #endif //CIUDADDES
 #ifdef ESTADISTICA
-  printf("*****************************************************\n");
+  /*printf("*****************************************************\n");
   printf("\n*******************  Estadística  *******************\n");
   printf("Cantidad de ciudades: %d\n", cityNum);
   printf("Cantidad de conexiones: %d\n", connections);
   printf("Cantidad de caminos posibles: %ld\n", factorial((long int) (cityNum - 1))/2);
   printf("Media de Distancias: %f\n", mean);
   printf("Desvío Estándar de Distancias: %f\n", sd);
-  printf("*****************************************************\n");
+  printf("*****************************************************\n");*/
 #endif //ESTADISTICA
   return;
 
@@ -193,9 +192,9 @@ void populateCity(city* cityArray, char* data)
 int findMajorantRestriction(city* cityArray)
 {
   int histogram[cityNum], currentCity;
-  int greedyDistance = 9999, minimumAvailablePath, nextCity;
+  int greedyDistance = 0xFFFFFF, minimumAvailablePath, nextCity;
   int auxPath[cityNum + 1], auxDistance;
-  printf("\n*********************  Greedy  **********************\n");
+  //printf("\n*********************  Greedy  **********************\n");
   for(int k = 0; k < cityNum; k++)
     {
       currentCity = k;
@@ -251,10 +250,10 @@ int findMajorantRestriction(city* cityArray)
           auxDistance += cityArray[currentCity].distance[k];
           //printf("Voy de %d a %d en: %d\n", currentCity+1, startNode+1, cityArray[currentCity].distance[startNode]);
         }
-      printf("Ciudad Inicial: %d\nDistancia: %d\nPath: ", k + 1, auxDistance);
+      /*printf("Ciudad Inicial: %d\nDistancia: %d\nPath: ", k + 1, auxDistance);
       for(int i = 0; i < cityNum + 1; i++)
         printf("%d;",auxPath[i]+1);
-      printf("\n\n");
+      printf("\n\n");*/
       if (auxDistance < greedyDistance)
         {
           greedyDistance = auxDistance;
@@ -262,7 +261,7 @@ int findMajorantRestriction(city* cityArray)
             greedyPath[i] = auxPath[i];
         }
     }
-  printf("*****************************************************\n");
+  //printf("*****************************************************\n");
   return greedyDistance;
 }
 
@@ -413,25 +412,26 @@ void TSP(city* cityArray)
 
 #ifdef HEURISTICS_ON
   minDistance = findMinimumDistances(cityArray, depth, startNode, histogram); //Hallamos h[0] y llenamos minimumDistanesArray con la segunda menor distancia de cada ciudad
-  printf("\n*******************  Heurística  ********************\n");
+  //printf("\n*******************  Heurística  ********************\n");
 #ifdef MAYORANTE_ON
-  printf("               Path Mayorante (Greedy)\n");
+  /*printf("               Path Mayorante (Greedy)\n");
   for(int i = 0; i < (53 - (2*(cityNum+1) + cityNum/10 * (cityNum+1) % 10))/2; i ++)
     printf(" "); // espacios para centrar path
   for(int i = 0; i < cityNum+1;i++)
   {
     printf("%d;", greedyPath[i]+1);
   }
-  printf("\n\nDistancia Mayorante (Greedy): %d\n", majorant);
+  printf("\n\nDistancia Mayorante (Greedy): %d\n", majorant);*/
 #endif // MAYORANTE_ON
+/*
   printf("h(0) = %d",minDistance);
-  printf("\n*****************************************************\n");
+  printf("\n*****************************************************\n");*/
 #else
-  printf("\n*****************  Sin Heurística  ******************\n");
+  //printf("\n*****************  Sin Heurística  ******************\n");
 #endif //HEURISTICS_ON
 
 #ifdef DEBUG
-   printf("START NODE = %d\n",cityArray[startNode].id);
+   //printf("START NODE = %d\n",cityArray[startNode].id);
 #endif //DEBUG
 
   //Empiezo con el primer nodo
@@ -485,15 +485,15 @@ void TSP(city* cityArray)
       {
         optimalCost = openList->cost;
 #ifdef DEBUG
-        printf("\n\n************************* GOAL  ******************************************\n\n");
+    /*    printf("\n\n************************* GOAL  ******************************************\n\n");
         printf("------------------------------------------------------\n\n");
         printf("--------------- Open List ---------------\n");
         printList(openList);
         printf("------------------------------------------------------\n\n");
         printf("--------------- Closed  List ---------------\n");
-        printList(closedList);
+        printList(closedList);*/
 #endif //DEBUG
-        printf("\n*******************  Resultados  ********************\n");
+        /* printf("\n*******************  Resultados  ********************\n");
         printf("                   Camino Óptimo\n");
         for(int i = 0; i < (53 - (2*(cityNum+1) + cityNum/10 * (cityNum+1) % 10))/2; i ++)
           printf(" "); // espacios para centrar path
@@ -504,14 +504,14 @@ void TSP(city* cityArray)
           }
         printf("\n\nDistancia Óptima = %d\n",openList->cost);
         printf("Nodos Creados: %d\n",createdNodes);
-        printf("Nodos Abiertos: %d\n",NA);
+        printf("Nodos Abiertos: %d\n",NA);*/
 #ifdef INFO_EXTRA
-        printf("Nodos Eliminados: %d\n",deletedNodes);
-        printf("Nodos Removidos: %d\n",removedNodes);
+        /*printf("Nodos Eliminados: %d\n",deletedNodes);
+        printf("Nodos Removidos: %d\n",removedNodes);*/
 #ifdef MAYORANTE_ON
-        printf("Nodos Descartados por Restricción Mayorante: %d\n", majorantNodes);
+        //printf("Nodos Descartados por Restricción Mayorante: %d\n", majorantNodes);
 #endif // MAYORANTE_ON
-        printf("Nodos Descartados por camino parcial subóptimo: %d\n",deletedNodes - removedNodes - majorantNodes);
+        //printf("Nodos Descartados por camino parcial subóptimo: %d\n",deletedNodes - removedNodes - majorantNodes);
 #endif //INFO_EXTRA
         //Liberamos memoria
 #ifdef NO_REPETIDOS
@@ -580,8 +580,8 @@ void TSP(city* cityArray)
   }
 
   //SI SALGO DEL WHILE POR ACA NO ENCONTRE EL GOAL!!!!!!
-  printf("\n\n****************************************************************************\n\n");
-  printf("ERROR!! NO SE ENCONTRO SOLUCION.\n");
+  //printf("\n\n****************************************************************************\n\n");
+  //printf("ERROR!! NO SE ENCONTRO SOLUCION.\n");
 
 }
 
