@@ -20,23 +20,33 @@ int NA, createdNodes, deletedNodes, removedNodes, majorantNodes, optimalCost, mi
 double mean, sd;
 int main(int argc, char* argv[])
 {
-  FILE *importFile, *outputFile;
-  char importText[1024*8], base[] = "Inputs/TSP_IN_", ext[] = ".txt", filename[40] = "Inputs/TSP_IN_0.txt";
+
+  if(argc!=2){
+      printf("Falta archivo de sesion\n");
+      return -1;
+  }
+  FILE *importFile, *outputFile, *sesion;
+  char importText[1024*8];
   int len;
-  char* delimiter;
+  char* delimiter, filename[1024];
 
+  sesion  = fopen(argv[1], "r");
 
-
-  outputFile = fopen("output0SMSNR.csv", "w");
+  outputFile = fopen("output.csv", "w");
   fprintf(outputFile,"Archivo;Cantidad de Ciudades;Conexiones;Caminos Posibles;\
   Distancia Media;Desvio Standard;Distancia Optima;Estimacion Heuristica;\
   Estimacion Mayorante;Tiempo de Ejecucion;Nodos Creados;Nodos Abiertos;\
   Nodos Eliminados;Nodos Removidos;Nodos Mayorantes;Nodos Suboptimos\n");
 // FOR BENCHMARKING
-  int fileIndex = 1;
+
+  fgets(filename, 1024, sesion);
+  printf("%s\n", filename);
+  filename[strlen(filename)-1]='\0';
+
   while(NULL != (importFile = fopen(filename, "r")))
   {
     //********** EMPIEZO A CONTAR TIEMPO DESDE ACA **********
+    printf("%s\n", filename);
     clock_t startTime = clock();
       mean = 0;
       sd = 0;
@@ -74,12 +84,12 @@ int main(int argc, char* argv[])
     mean,sd,optimalCost,minDistance,majorant,executionTime,createdNodes, NA, deletedNodes,\
     removedNodes, majorantNodes, deletedNodes - removedNodes - majorantNodes);
     fclose(importFile);
-    sprintf(filename, "%s%d%s",base,fileIndex,ext);
-    fileIndex++;
-    //printf("Archivo: %s\n",filename);
+    fgets(filename, 1024, sesion);
+      filename[strlen(filename)-1]='\0';
     free(greedyPath);
   }
   fclose(outputFile);
+  fclose(sesion);
   return 0;
 }
 
