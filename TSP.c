@@ -16,12 +16,12 @@ int majorant;
 int* greedyPath;
 
 // Variables para Benchmarking
-int createdNodes, deletedNodes, removedNodes, majorantNodes;
+int NA, createdNodes, deletedNodes, removedNodes, majorantNodes, optimalCost, minDistance, connections;
 double mean, sd;
 int main(int argc, char* argv[])
 {
-  FILE *importFile;
-  char importText[1024*8];
+  FILE *importFile, *outputFile;
+  char importText[1024*8], base[] = "TSP_IN_RAND1_", ext[] = ".txt", filename[20] = "TSP_IN_RAND1_4.txt";
   int len;
   char* delimiter;
 
@@ -35,46 +35,52 @@ int main(int argc, char* argv[])
   removedNodes = 0;
   majorantNodes = 0;
 #endif //INFO_EXTRA
-  if(argc != 2)
-  {
-    printf("Error: Debe pasar el archivo como parámetro\n");
-    return 1;
-  }
-  //********** EMPIEZO A CONTAR TIEMPO DESDE ACA **********
-  clock_t startTime = clock();
 
-  importFile = fopen(argv[1], "r");
-  if (!importFile)
-    {
-      printf("Error: No se encontró el archivo %s\n",argv[1]);
-      return 0;
-    }
-  fgets(importText, 1024, importFile);
-  delimiter = strchr(importText,';');
-  *delimiter = '\0';
-  cityNum = atoi(importText);
-  printf("------------------------------------------------------------\n");
-  printf("Archivo %s\n",argv[1]);
-  printf("------------------------------------------------------------\n\n");
-#ifdef WINDOWS
-  city cityArray[vectorLength];
-#else
-  city cityArray[cityNum];
-#endif
-  initializeCity(cityArray);
-  fgets(importText, 1024*8, importFile);
-  populateCity(cityArray, importText);
-#ifdef MAYORANTE_ON
-  greedyPath = malloc(sizeof(int)*(cityNum+1));
-  majorant = findMajorantRestriction(cityArray); // Algoritmo Greedy para obtener una restricción mayorante.
-  startNode = greedyPath[0]; // Cargo la ciudad inicial del mejor Greedy
-#endif // MAYORANTE_ON
-  TSP(cityArray);
-  clock_t endTime = clock();
-  //********** TERMINE DE CONTAR TIEMPO ACA **********
-  double executionTime = (double)1000*(endTime - startTime) / CLOCKS_PER_SEC;
-  printf("Tiempo de ejecucion = %f ms\n", executionTime);
-  printf("*****************************************************\n");
+  outputFile = fopen("output.csv", "w");
+  fprintf(outputFile,"Archivo;Cantidad de Ciudades;Conexiones;Caminos Posibles;\
+  Distancia Media;Desvio Standard;Distancia Optima;Estimacion Heuristica;\
+  Estimacion Mayorante;Tiempo de Ejecucion;Nodos Creados;Nodos Abiertos;\
+  Nodos Eliminados;Nodos Removidos;Nodos Mayorantes;Nodos Suboptimos\n");
+// FOR BENCHMARKING
+  int fileIndex = 5;
+  while(NULL != (importFile = fopen(filename, "r")))
+  {
+    //********** EMPIEZO A CONTAR TIEMPO DESDE ACA **********
+
+    clock_t startTime = clock();
+    // Imprimo todo lo que ya tengo
+    fgets(importText, 1024, importFile);
+    delimiter = strchr(importText,';');
+    *delimiter = '\0';
+    cityNum = atoi(importText);
+  #ifdef WINDOWS
+    city cityArray[vectorLength];
+  #else
+    city cityArray[cityNum];
+  #endif
+    initializeCity(cityArray);
+    fgets(importText, 1024*8, importFile);
+    populateCity(cityArray, importText);
+  #ifdef MAYORANTE_ON
+    greedyPath = malloc(sizeof(int)*(cityNum+1));
+    majorant = findMajorantRestriction(cityArray); // Algoritmo Greedy para obtener una restricción mayorante.
+    startNode = greedyPath[0]; // Cargo la ciudad inicial del mejor Greedy
+  #endif // MAYORANTE_ON
+    TSP(cityArray);
+    clock_t endTime = clock();
+    //********** TERMINE DE CONTAR TIEMPO ACA **********
+    double executionTime = (double)1000*(endTime - startTime) / CLOCKS_PER_SEC;
+    printf("Tiempo de ejecucion = %f ms\n", executionTime);
+    printf("*****************************************************\n");
+    fprintf(outputFile, "%s;%d;%d;%ld;%f;%f;%d;%d;%d;%f;%d;%d;%d;%d;%d;%d\n",\
+    filename, cityNum,connections,factorial((long int) (cityNum - 1))/2,\
+    mean,sd,optimalCost,minDistance,majorant,executionTime,createdNodes, NA, deletedNodes,\
+    removedNodes, majorantNodes, deletedNodes - removedNodes - majorantNodes);
+    fclose(importFile);
+    sprintf(filename, "%s%d%s",base,fileIndex,ext);
+    fileIndex++;
+    printf("Archivo: %s\n",filename);
+  }
   return 0;
 }
 
@@ -120,7 +126,7 @@ void populateCity(city* cityArray, char* data)
   int distances;
   char* delimiter;
 
-  int connections = 0;
+  connections = 0;
   for(int i = 0; i < cityNum - 1; i++)
   {
     for(int j = i + 1; j < cityNum; j++)
@@ -381,7 +387,7 @@ int findMinimumDistances(city* cityArray, int depth, int currentCity, int* histo
  --------------------------------------------------------------------------------*/
 void TSP(city* cityArray)
 {
-  int  depth=0, cityFlag=0, i=0, NA=0, Node=0, currentCity=0;
+  int  depth=0, cityFlag=0, i=0, Node=0, currentCity=0;
   listNode* currentNode; //Puntero a nuevo nodo a crear
   listNode* openList; //Puntero a inicio de lista abierta
   listNode* closedList = NULL; //Puntero a inicio de lista cerrada
@@ -406,7 +412,7 @@ void TSP(city* cityArray)
     }
 
 #ifdef HEURISTICS_ON
-  int minDistance = findMinimumDistances(cityArray, depth, startNode, histogram); //Hallamos h[0] y llenamos minimumDistanesArray con la segunda menor distancia de cada ciudad
+  minDistance = findMinimumDistances(cityArray, depth, startNode, histogram); //Hallamos h[0] y llenamos minimumDistanesArray con la segunda menor distancia de cada ciudad
   printf("\n*******************  Heurística  ********************\n");
 #ifdef MAYORANTE_ON
   printf("               Path Mayorante (Greedy)\n");
@@ -477,6 +483,7 @@ void TSP(city* cityArray)
     ////////////////////
     if(openList->idCurrentCity == startNode && depth > 1) // Encontre GOAL!!!!
       {
+        optimalCost = openList->cost;
 #ifdef DEBUG
         printf("\n\n************************* GOAL  ******************************************\n\n");
         printf("------------------------------------------------------\n\n");
