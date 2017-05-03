@@ -187,7 +187,7 @@ void populateCity(city* cityArray, char* data)
 int findMajorantRestriction(city* cityArray)
 {
   int histogram[cityNum], currentCity;
-  int greedyDistance = 9999, minimumAvailablePath, nextCity;
+  int greedyDistance = 0xffffff, minimumAvailablePath, nextCity;
   int auxPath[cityNum + 1], auxDistance;
   printf("\n*********************  Greedy  **********************\n");
   for(int k = 0; k < cityNum; k++)
@@ -337,13 +337,13 @@ int findMinimumDistances(city* cityArray, int depth, int currentCity, int* histo
                       else
                         min += min2;
                       if(i >= startNode && i >= currentCity)
-                        distance += min/2; //Solo me quedar recorrer un camino por ciudad, uso los  minimos
+                        distance += min;///2; //Solo me quedar recorrer un camino por ciudad, uso los  minimos
                     }
                   else
-                    distance += (min1+min2)/2; //Para la distancia uso el promedio de los dos minimos
+                    distance += (min1+min2);///2; //Para la distancia uso el promedio de los dos minimos
                 }
               else
-                distance += (min1+min2)/2; //Para la distancia uso el promedio de los dos minimos
+                distance += (min1+min2);///2; //Para la distancia uso el promedio de los dos minimos
             }
         }
     }
@@ -357,13 +357,13 @@ int findMinimumDistances(city* cityArray, int depth, int currentCity, int* histo
       else                 //Estoy en la ultima ciudad antes del GOAL
         {
           if ( currentCity > startNode)
-            distance = cityArray[currentCity].distance[startNode];
+            distance = cityArray[currentCity].distance[startNode]*2;
           else
-            distance = cityArray[currentCity].distance[startNode-1];
+            distance = cityArray[currentCity].distance[startNode-1]*2;
         }
     }
   histogram[startNode] = 1; //restauro histograma
-  return (distance);
+  return (distance/2);
 }
 
 
@@ -540,11 +540,17 @@ void TSP(city* cityArray)
       }
     else //Si no estoy en el ultimo nodo agrego todas las ciudades no visitadas.
       {
+        int counter = 0;
         for(int j = 0; j < cityNum -1; j++)
           {
             currentCity = cityArray[fatherNode->idCurrentCity].nextCity[j];
+#ifdef NO_REPETIDOS
+            if(depth == 1 && counter > (cityNum-4)) // Del nodo inicial solo creo la mitad de los hijos porque la otra mitad forman caminos redundantes
+              break;
+#endif //NO_REPETIDOS
             if (!histogram[currentCity]) //Si no esta en el camino recorrido agrego el nodo
               {
+                counter++;
                 addNode(cityArray,j,fatherNode, minimumDistancesArray, depth, histogram, depthList);
               }
             cityFlag = 0;
