@@ -27,17 +27,18 @@ int main(int argc, char* argv[])
 
 
 
-  outputFile = fopen("output0SMSNR.csv", "w");
+  outputFile = fopen("output0SMSH.csv", "w");
   fprintf(outputFile,"Archivo;Cantidad de Ciudades;Conexiones;Caminos Posibles;\
   Distancia Media;Desvio Standard;Distancia Optima;Estimacion Heuristica;\
   Estimacion Mayorante;Tiempo de Ejecucion;Nodos Creados;Nodos Abiertos;\
   Nodos Eliminados;Nodos Removidos;Nodos Mayorantes;Nodos Suboptimos\n");
 // FOR BENCHMARKING
   int fileIndex = 1;
-  while(NULL != (importFile = fopen(filename, "r")))
+  while(fileIndex < 12)//NULL != (importFile = fopen(filename, "r")))
   {
     //********** EMPIEZO A CONTAR TIEMPO DESDE ACA **********
-    clock_t startTime = clock();
+      importFile = fopen(filename, "r");
+      clock_t startTime = clock();
       mean = 0;
       sd = 0;
       createdNodes = 1; // el primero no es contado así que lo agregamos
