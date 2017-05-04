@@ -21,19 +21,19 @@ double mean, sd;
 int main(int argc, char* argv[])
 {
   FILE *importFile, *outputFile;
-  char importText[1024*8], base[] = "Inputs/TSP_IN_", ext[] = ".txt", filename[40] = "Inputs/TSP_IN_0.txt";
+  char importText[1024*8], base[] = "Inputs/RAND2/TSP_IN_RAND2_", ext[] = ".txt", filename[40] = "Inputs/RAND2/TSP_IN_RAND2_4.txt";
   int len;
   char* delimiter;
 
 
 
-  outputFile = fopen("output0SMSH.csv", "w");
+  outputFile = fopen("output2SMSHSR.csv", "w");
   fprintf(outputFile,"Archivo;Cantidad de Ciudades;Conexiones;Caminos Posibles;\
   Distancia Media;Desvio Standard;Distancia Optima;Estimacion Heuristica;\
   Estimacion Mayorante;Tiempo de Ejecucion;Nodos Creados;Nodos Abiertos;\
   Nodos Eliminados;Nodos Removidos;Nodos Mayorantes;Nodos Suboptimos\n");
 // FOR BENCHMARKING
-  int fileIndex = 1;
+  int fileIndex = 5;
   while(fileIndex < 12)//NULL != (importFile = fopen(filename, "r")))
   {
     //********** EMPIEZO A CONTAR TIEMPO DESDE ACA **********
@@ -343,13 +343,13 @@ int findMinimumDistances(city* cityArray, int depth, int currentCity, int* histo
                       else
                         min += min2;
                       if(i >= startNode && i >= currentCity)
-                        distance += min/2; //Solo me quedar recorrer un camino por ciudad, uso los  minimos
+                        distance += min; //Solo me quedar recorrer un camino por ciudad, uso los  minimos
                     }
                   else
-                    distance += (min1+min2)/2; //Para la distancia uso el promedio de los dos minimos
+                    distance += (min1+min2); //Para la distancia uso el promedio de los dos minimos
                 }
               else
-                distance += (min1+min2)/2; //Para la distancia uso el promedio de los dos minimos
+                distance += (min1+min2); //Para la distancia uso el promedio de los dos minimos
             }
         }
     }
@@ -363,13 +363,13 @@ int findMinimumDistances(city* cityArray, int depth, int currentCity, int* histo
       else                 //Estoy en la ultima ciudad antes del GOAL
         {
           if ( currentCity > startNode)
-            distance = cityArray[currentCity].distance[startNode];
+            distance = cityArray[currentCity].distance[startNode]*2;
           else
-            distance = cityArray[currentCity].distance[startNode-1];
+            distance = cityArray[currentCity].distance[startNode-1]*2;
         }
     }
   histogram[startNode] = 1; //restauro histograma
-  return (distance);
+  return (distance/2);
 }
 
 
@@ -548,8 +548,12 @@ void TSP(city* cityArray)
       }
     else //Si no estoy en el ultimo nodo agrego todas las ciudades no visitadas.
       {
-        for(int j = 0; j < cityNum -1; j++)
+        for(int j = 0; j < cityNum - 1; j++)
           {
+#ifdef NO_REPETIDOS
+            if(depth == 1 && j == cityNum - 2) // Salteo el último a depth 1 que contiene todos caminos replicados
+              break;
+#endif
             currentCity = cityArray[fatherNode->idCurrentCity].nextCity[j];
             if (!histogram[currentCity]) //Si no esta en el camino recorrido agrego el nodo
               {
@@ -647,7 +651,7 @@ void addNode(city* cityArray, int j, listNode* fatherNode, int *dist, int depth,
     heuristic = 0;
 #endif //HEURISTICS_ON
 #ifdef MAYORANTE_ON
-  if(heuristic + costToMe > majorant)
+  if((heuristic + currentCost) > majorant)
   {
     majorantNodes++;
     deletedNodes++;
@@ -721,10 +725,7 @@ void addNode(city* cityArray, int j, listNode* fatherNode, int *dist, int depth,
               if(currDepthListItem->nextDepthNode)
                 currDepthListItem->nextDepthNode->previousDepthNode = currDepthListItem->previousDepthNode;
               free(currDepthListItem); //Libero memoria
-              if(!nodeToDelete->isFather) //Si el nodo a borrar esta en la lista abierta
-                {
-                  free(nodeToDelete); //Libero memoria
-                }
+              free(nodeToDelete); //Libero memoria
               break;
             }else
             {
@@ -746,10 +747,12 @@ void addNode(city* cityArray, int j, listNode* fatherNode, int *dist, int depth,
   currentNode->   heuristic         = heuristic;
   currentNode->   isFather          = 0;
   currentNode->   father            = fatherNode;
+  currentNode->   nextListItem      = NULL;
   fatherNode->    isFather          = 1;
   currentCost = currentNode->cost + currentNode->heuristic; //f(n) = g(n) + h(n)
-  while(pivotNode->nextListItem)//Recorro la lista hasta encontrar el lugar donde insertar el nodo
+  while(pivotNode)//Recorro la lista hasta encontrar el lugar donde insertar el nodo
     {
+
       if(currentCost < (pivotNode->cost+pivotNode->heuristic)) //Tengo que insertar el nodo antes
         {
           currentNode->   previousListItem  = pivotNode->previousListItem;
@@ -760,15 +763,17 @@ void addNode(city* cityArray, int j, listNode* fatherNode, int *dist, int depth,
           pivotNode->     previousListItem  = currentNode;
           break;
         }
+      prevNode = pivotNode;
       pivotNode = pivotNode->nextListItem;
     }
-  if(!pivotNode->nextListItem) //Llegue al final de la lista
+  if(!pivotNode) //Llegue al final de la lista
     {
 
-      currentNode->   previousListItem  = pivotNode;
+      currentNode->   previousListItem  = prevNode;
       currentNode->   nextListItem      = NULL;
-      pivotNode->     nextListItem      = currentNode;
+      prevNode->     nextListItem      = currentNode;
     }
+
 #ifdef  NO_REPETIDOS
   // Agrego el nodo actual a la lista de profundidades para comparar a futuro
   if(depthList[depth-1] == NULL) // Primer camino con esta profundidades
