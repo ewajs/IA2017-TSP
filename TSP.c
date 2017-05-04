@@ -67,7 +67,7 @@ int main(int argc, char* argv[])
 #ifdef MAYORANTE_ON
   greedyPath = malloc(sizeof(int)*(cityNum+1));
   majorant = findMajorantRestriction(cityArray); // Algoritmo Greedy para obtener una restricción mayorante.
-  startNode = greedyPath[0]; // Cargo la ciudad inicial del mejor Greedy
+  /* startNode = greedyPath[0]; // Cargo la ciudad inicial del mejor Greedy */
 #endif // MAYORANTE_ON
   TSP(cityArray);
   clock_t endTime = clock();
@@ -381,7 +381,7 @@ int findMinimumDistances(city* cityArray, int depth, int currentCity, int* histo
  --------------------------------------------------------------------------------*/
 void TSP(city* cityArray)
 {
-  int  depth=0, cityFlag=0, i=0, NA=0, Node=0, currentCity=0;
+  int  depth=0, i=0, NA=0, Node=0, currentCity=0;
   listNode* currentNode; //Puntero a nuevo nodo a crear
   listNode* openList; //Puntero a inicio de lista abierta
   listNode* closedList = NULL; //Puntero a inicio de lista cerrada
@@ -540,20 +540,15 @@ void TSP(city* cityArray)
       }
     else //Si no estoy en el ultimo nodo agrego todas las ciudades no visitadas.
       {
-        int counter = 0;
         for(int j = 0; j < cityNum -1; j++)
           {
-            currentCity = cityArray[fatherNode->idCurrentCity].nextCity[j];
 #ifdef NO_REPETIDOS
-            if(depth == 1 && counter > (cityNum-4)) // Del nodo inicial solo creo la mitad de los hijos porque la otra mitad forman caminos redundantes
+            if(depth == 1 && j > (cityNum-3)) // Del nodo inicial no creo el ultimo hijo para crear menos caminos redundantes
               break;
 #endif //NO_REPETIDOS
+            currentCity = cityArray[fatherNode->idCurrentCity].nextCity[j];
             if (!histogram[currentCity]) //Si no esta en el camino recorrido agrego el nodo
-              {
-                counter++;
-                addNode(cityArray,j,fatherNode, minimumDistancesArray, depth, histogram, depthList);
-              }
-            cityFlag = 0;
+              addNode(cityArray,j,fatherNode, minimumDistancesArray, depth, histogram, depthList);
           }
       }
     ////////////////////////////////////////////////////////////////////////////////
@@ -645,7 +640,7 @@ void addNode(city* cityArray, int j, listNode* fatherNode, int *dist, int depth,
     heuristic = 0;
 #endif //HEURISTICS_ON
 #ifdef MAYORANTE_ON
-  if(heuristic + costToMe > majorant)
+  if((heuristic + currentCost) > majorant)
   {
     majorantNodes++;
     deletedNodes++;
