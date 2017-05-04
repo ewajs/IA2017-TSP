@@ -714,10 +714,7 @@ void addNode(city* cityArray, int j, listNode* fatherNode, int *dist, int depth,
               if(currDepthListItem->nextDepthNode)
                 currDepthListItem->nextDepthNode->previousDepthNode = currDepthListItem->previousDepthNode;
               free(currDepthListItem); //Libero memoria
-              if(!nodeToDelete->isFather) //Si el nodo a borrar esta en la lista abierta
-                {
-                  free(nodeToDelete); //Libero memoria
-                }
+              free(nodeToDelete); //Libero memoria
               break;
             }else
             {
@@ -739,10 +736,12 @@ void addNode(city* cityArray, int j, listNode* fatherNode, int *dist, int depth,
   currentNode->   heuristic         = heuristic;
   currentNode->   isFather          = 0;
   currentNode->   father            = fatherNode;
+  currentNode->   nextListItem      = NULL;
   fatherNode->    isFather          = 1;
   currentCost = currentNode->cost + currentNode->heuristic; //f(n) = g(n) + h(n)
-  while(pivotNode->nextListItem)//Recorro la lista hasta encontrar el lugar donde insertar el nodo
+  while(pivotNode)//Recorro la lista hasta encontrar el lugar donde insertar el nodo
     {
+      
       if(currentCost < (pivotNode->cost+pivotNode->heuristic)) //Tengo que insertar el nodo antes
         {
           currentNode->   previousListItem  = pivotNode->previousListItem;
@@ -753,15 +752,17 @@ void addNode(city* cityArray, int j, listNode* fatherNode, int *dist, int depth,
           pivotNode->     previousListItem  = currentNode;
           break;
         }
+      prevNode = pivotNode;
       pivotNode = pivotNode->nextListItem;
     }
-  if(!pivotNode->nextListItem) //Llegue al final de la lista
+  if(!pivotNode) //Llegue al final de la lista
     {
-
-      currentNode->   previousListItem  = pivotNode;
+      
+      currentNode->   previousListItem  = prevNode;
       currentNode->   nextListItem      = NULL;
-      pivotNode->     nextListItem      = currentNode;
+      prevNode->     nextListItem      = currentNode;
     }
+ 
 #ifdef  NO_REPETIDOS
   // Agrego el nodo actual a la lista de profundidades para comparar a futuro
   if(depthList[depth-1] == NULL) // Primer camino con esta profundidades
