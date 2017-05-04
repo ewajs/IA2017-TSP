@@ -67,7 +67,7 @@ int main(int argc, char* argv[])
 #ifdef MAYORANTE_ON
   greedyPath = malloc(sizeof(int)*(cityNum+1));
   majorant = findMajorantRestriction(cityArray); // Algoritmo Greedy para obtener una restricción mayorante.
-  /* startNode = greedyPath[0]; // Cargo la ciudad inicial del mejor Greedy */
+  startNode = greedyPath[0]; // Cargo la ciudad inicial del mejor Greedy
 #endif // MAYORANTE_ON
   TSP(cityArray);
   clock_t endTime = clock();
@@ -424,10 +424,6 @@ void TSP(city* cityArray)
   printf("\n*****************  Sin Heurística  ******************\n");
 #endif //HEURISTICS_ON
 
-#ifdef DEBUG
-   printf("START NODE = %d\n",cityArray[startNode].id);
-#endif //DEBUG
-
   //Empiezo con el primer nodo
   //Configuro el primer nodo Lista abierta
   openList = (listNode*)malloc(sizeof (listNode));
@@ -714,7 +710,8 @@ void addNode(city* cityArray, int j, listNode* fatherNode, int *dist, int depth,
               if(currDepthListItem->nextDepthNode)
                 currDepthListItem->nextDepthNode->previousDepthNode = currDepthListItem->previousDepthNode;
               free(currDepthListItem); //Libero memoria
-              free(nodeToDelete); //Libero memoria
+              if(!nodeToDelete->isFather)
+                free(nodeToDelete); //Libero memoria
               break;
             }else
             {
