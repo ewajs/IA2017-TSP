@@ -739,8 +739,17 @@ void addNode(city* cityArray, int j, listNode* fatherNode, int *dist, int depth,
   while(pivotNode)//Recorro la lista hasta encontrar el lugar donde insertar el nodo
     {
       
-      if(currentCost < (pivotNode->cost+pivotNode->heuristic)) //Tengo que insertar el nodo antes
+      if(currentCost <= (pivotNode->cost+pivotNode->heuristic)) //Tengo que insertar el nodo antes
         {
+          if(currentCost == (pivotNode->cost+pivotNode->heuristic))
+            {
+              if(currentNode->cost < pivotNode->cost || NULL == pivotNode->previousListItem)
+                {
+                  prevNode = pivotNode;
+                  pivotNode = pivotNode->nextListItem;                
+                  continue;
+                }
+            }
           currentNode->   previousListItem  = pivotNode->previousListItem;
           prevNode                          = pivotNode->previousListItem;
           if(prevNode)
